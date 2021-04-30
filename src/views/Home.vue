@@ -3,19 +3,25 @@
         <Todo />
         <label for="users">select todo id:</label>
         <input
+            class="form-control"
             type="number"
             id="users"
             name="users"
+            :placeholder="userID"
             v-model="userID"
             @input="filter"
         />
-        <input
-            type="checkbox"
-            name="compelete"
-            id="compelete"
-            v-model="isDone"
-            @change="filter"
-        />
+        <div class="form-check form-switch">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="compelete"
+                id="compelete"
+                v-model="isDone"
+                @change="filter"
+            />
+        </div>
+
         <ul>
             <li v-for="todo in todos">{{ todo.title }}</li>
         </ul>
@@ -30,14 +36,8 @@ export default {
     name: 'Home',
     components: { Todo },
     data: () => ({
-        userID: {
-            type: Number,
-            default: 0,
-        },
-        isDone: {
-            type: Boolean,
-            default: false,
-        },
+        userID: 1,
+        isDone: false,
         todos: [],
     }),
     methods: {
