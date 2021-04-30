@@ -1,6 +1,5 @@
 <template>
     <div class="container my-4 home">
-        <Todo />
         <label for="users">select todo id:</label>
         <input
             class="form-control"
@@ -22,8 +21,10 @@
             />
         </div>
 
-        <ul>
-            <li v-for="todo in todos">{{ todo.title }}</li>
+        <ul class="list-group">
+            <li class="list-group-item" v-for="todo in todos">
+                {{ todo.title }}
+            </li>
         </ul>
     </div>
 </template>
@@ -55,6 +56,8 @@ export default {
                 })
         },
     },
-    created() {},
+    created() {
+        this.filter()
+    },
 }
 </script>
