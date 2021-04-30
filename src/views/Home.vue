@@ -1,8 +1,8 @@
 <template>
     <div class="container my-4 home">
-        <label for="users">select todo id:</label>
+        <label class="mb-1" for="users">select todo id:</label>
         <input
-            class="form-control"
+            class="form-control mb-2"
             type="number"
             id="users"
             name="users"
@@ -10,7 +10,7 @@
             v-model="userID"
             @input="filter"
         />
-        <div class="form-check form-switch">
+        <div class="form-check form-switch mb-2">
             <input
                 class="form-check-input"
                 type="checkbox"
@@ -26,6 +26,9 @@
                 {{ todo.title }}
             </li>
         </ul>
+        <div v-if="state" class="alert alert-danger" role="alert">
+            There is no data!
+        </div>
     </div>
 </template>
 
@@ -37,9 +40,10 @@ export default {
     name: 'Home',
     components: { Todo },
     data: () => ({
+        todos: [],
         userID: 1,
         isDone: false,
-        todos: [],
+        state: false,
     }),
     methods: {
         filter() {
@@ -50,6 +54,12 @@ export default {
                 .then(res => {
                     this.todos = res.data
                     console.log(this.todos)
+
+                    if (this.todos.length == 0) {
+                        this.state = true
+                    } else {
+                        this.state = false
+                    }
                 })
                 .catch(error => {
                     console.log(error)
