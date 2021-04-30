@@ -1,6 +1,6 @@
 <template>
     <div class="container my-4 home">
-        <label class="mb-1" for="users">select todo id:</label>
+        <label class="mb-1" for="users">select todo user id:</label>
         <input
             class="form-control mb-2"
             type="number"
@@ -10,6 +10,7 @@
             v-model="userID"
             @input="filter"
         />
+        <label class="mb-1" for="compelete">select todo status:</label>
         <div class="form-check form-switch mb-2">
             <input
                 class="form-check-input"
