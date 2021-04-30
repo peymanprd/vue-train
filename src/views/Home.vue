@@ -21,9 +21,8 @@
                 @change="filter"
             />
         </div>
-
         <ul class="list-group">
-            <li class="list-group-item" v-for="todo in todos">
+            <li class="list-group-item" v-for="todo in todos" :key="todo.id">
                 {{ todo.title }}
             </li>
         </ul>
