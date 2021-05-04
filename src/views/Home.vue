@@ -1,6 +1,6 @@
 <template>
     <div class="container my-4 home">
-        <label class="mb-1" for="users">select todo user id:</label>
+        <label class="mb-1" for="users">select user id:</label>
         <input
             class="form-control mb-2"
             type="number"
@@ -10,20 +10,12 @@
             v-model="userID"
             @input="filter"
         />
-        <label class="mb-1" for="compelete">select todo status:</label>
-        <div class="form-check form-switch mb-2">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                name="compelete"
-                id="compelete"
-                v-model="isDone"
-                @change="filter"
-            />
-        </div>
         <ul class="list-group">
-            <li class="list-group-item" v-for="todo in todos" :key="todo.id">
-                {{ todo.title }}
+            <li class="list-group-item" v-for="user in users" :key="user.id">
+                {{ user.name }}
+                <div>
+                    <small>{{ user.website }}</small>
+                </div>
             </li>
         </ul>
         <div v-if="state" class="alert alert-danger" role="alert">
@@ -34,28 +26,25 @@
 
 <script>
 import Todo from '@/components/Todo.vue'
-import axios from 'axios'
+import API_SERVICE from '../services/APIService'
 
 export default {
     name: 'Home',
     components: { Todo },
     data: () => ({
-        todos: [],
+        users: [],
         userID: 1,
         isDone: false,
         state: false,
     }),
     methods: {
         filter() {
-            axios
-                .get('https://jsonplaceholder.typicode.com/todos', {
-                    params: { userId: this.userID, completed: this.isDone },
-                })
+            API_SERVICE.getUsers(this.userID)
                 .then(res => {
-                    this.todos = res.data
-                    console.log(this.todos)
+                    this.users = res.data
+                    console.log(this.users)
 
-                    if (this.todos.length == 0) {
+                    if (this.users.length == 0) {
                         this.state = true
                     } else {
                         this.state = false
