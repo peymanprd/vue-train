@@ -1,10 +1,145 @@
 <template>
     <div class="home mt-4">
+        <button @click="checkLen" type="button" class="btn btn-success">
+            test
+        </button>
+        <div>
+            <input class="form-control" v-model="qty" @input="handleQty" />
+            {{ formattedQty }}
+        </div>
+        <div id="canvasOption">
+            <button
+                class="btn btn-primary"
+                type="button"
+                data-bs-target="#offcanvasBottom"
+                @click.prevent="myCanvas.show()"
+            >
+                Toggle bottom offcanvas
+            </button>
+
+            <div
+                ref="mycanvas"
+                class="offcanvas offcanvas-bottom"
+                tabindex="-1"
+                id="offcanvasBottom"
+            >
+                <div class="offcanvas-header bg-light">
+                    <h5 class="offcanvas-title">
+                        canvas title
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close text-reset"
+                        @click.prevent="myCanvas.hide()"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="offcanvas-body">
+                    Content for the offcanvas goes here. You can place just
+                    about any Bootstrap component or custom elements here.
+                </div>
+            </div>
+        </div>
+
         <div class="my-2" v-for="(user, index) in users" :key="user.id">
-            <button @click="addUser(index)" class="btn btn-primary">+</button>
+            <button
+                @click="userItem(user), modal.toggle()"
+                class="btn btn-primary"
+            >
+                +
+            </button>
             {{ user.name + ' : ' + user.count }}
         </div>
+        <button @click="toast.show()" type="button" class="btn btn-primary">
+            پیام صدر اعظم
+        </button>
+
+        <div
+            class="toast align-items-center text-white bg-dark border-0 mt-2"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            ref="target"
+        >
+            <div class="d-flex">
+                <div class="toast-body">
+                    صنعت چاپ و با استفاده از طراحان گرافیک است.
+                </div>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
+                    @click="toast.hide()"
+                    aria-label="Close"
+                ></button>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" ref="reference">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ item.name }}</h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            aria-label="Close"
+                            @click="modal.hide()"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ item.website }}</p>
+                        <small
+                            >پیر مردی هر روز تو محله می دید پسر کی با کفش های
+                            پاره و پای برهنه با توپ پلاستیکی فوتبال بازی می کند،
+                            روزی رفت ی کتانی نو خرید و اومد و به پسرک گفت بیا
+                            این کفشا رو بپوش…پسرک کفشا رو پوشید و خوشحال رو به
+                            پیر مرد کرد و گفت: شما خدایید؟! پیر مرد لبش را گزید
+                            و گفت نه! پسرک گفت پس دوست خدایی، چون من دیشب فقط به
+                            خدا گفتم كه کفش ندارم…
+                        </small>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            @click="modal.hide()"
+                            type="button"
+                            class="btn btn-secondary"
+                        >
+                            انصراف
+                        </button>
+                        <button
+                            @click="addUser(index)"
+                            type="button"
+                            class="btn btn-primary"
+                        >
+                            ثبت تغییرات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <ModalComp>
+            <div slot="header">
+                hasan
+            </div>
+            <div slot="footer">
+                <button
+                    @click="modal.hide()"
+                    type="button"
+                    class="btn btn-secondary"
+                >
+                    Close
+                </button>
+                <button
+                    @click="addUser(index)"
+                    type="button"
+                    class="btn btn-primary"
+                >
+                    Save changes
+                </button>
+            </div>
+        </ModalComp> -->
         <hr class="my-4" />
+
         <div v-if="admins">
             <div v-for="admin in admins" :key="admin.id">
                 {{ admin.name + ' : ' + admin.count }}
@@ -15,14 +150,39 @@
 
 <script>
 import API_Service from '../services/api'
-import { ref, reactive } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
+import { Modal } from 'bootstrap'
+import { Toast } from 'bootstrap'
+import { Offcanvas } from 'bootstrap'
+import ModalComp from '../components/Modal'
+import MyCanvas from '../components/MyCanvas'
 
 export default {
     name: 'Home',
+    components: { ModalComp, MyCanvas },
     setup() {
         const user = ref({})
         const users = ref()
         const admins = ref([])
+        const date = ref('1397/02/02')
+        const item = ref({})
+        const modal = ref(null)
+        const toast = ref(null)
+        const myCanvas = ref(null)
+        const qty = ref(0)
+
+        const handleQtyInput = computed(() => {
+            return Number(qty.value).toLocaleString()
+        })
+
+        const formattedQty = computed(() => {
+            return Number(qty.value.toString().replace(/\D/g, ''))
+        })
+
+        function handleQty(qty) {
+            Number(qty).toLocaleString()
+            console.log(handleQtyInput)
+        }
 
         function fetchUsers() {
             API_Service.getUsers()
@@ -60,10 +220,37 @@ export default {
             console.log(admins.value)
         }
 
-        return { user, users, fetchUsers, admins, addUser }
+        function userItem(user) {
+            item.value = user
+        }
+
+        return {
+            user,
+            users,
+            fetchUsers,
+            admins,
+            addUser,
+            date,
+            userItem,
+            item,
+            modal,
+            toast,
+            myCanvas,
+            qty,
+            formattedQty,
+            handleQtyInput,
+        }
     },
+
     created() {
         this.fetchUsers()
+    
+    },
+
+    mounted() {
+        this.modal = new Modal(this.$refs.reference)
+        this.toast = new Toast(this.$refs.target, { delay: 4000 })
+        this.myCanvas = new Offcanvas(this.$refs.mycanvas)
     },
 }
 </script>
