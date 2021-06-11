@@ -2,7 +2,7 @@
     <div class="container">
         <div id="nav" class="my-4">
             <router-link
-                v-if="!state.isAuth"
+                v-if="!userPermision"
                 :to="{ name: 'login' }"
                 class="btn btn-link"
                 >Login</router-link
@@ -22,16 +22,16 @@
     </div>
 </template>
 <script>
-import state from '@/store/helpers'
+import { userPermision } from '@/store/helpers'
 
 export default {
-    data: () => ({
-        state,
-    }),
+    data: () => ({}),
+    computed: {
+        ...userPermision,
+    },
     methods: {
         logout() {
             this.$store.dispatch('user/logout').then(() => {
-                state.isAuth = false
                 this.$router.push({ name: 'login' })
             })
         },

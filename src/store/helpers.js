@@ -1,7 +1,8 @@
 /* 
 global state is here
 */
+import { mapGetters } from 'vuex'
 
-export default {
-    isAuth: false,
+export const userPermision = {
+    ...mapGetters('user', ['userPermision']),
 }

@@ -35,8 +35,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import state from '@/store/helpers'
+import { userPermision } from '@/store/helpers'
 
 export default {
     name: 'loginPage',
@@ -45,11 +44,10 @@ export default {
             email: null,
             password: null,
         },
-        state,
         error: '',
     }),
     computed: {
-        ...mapState('user', ['userResult']),
+        ...userPermision,
     },
     methods: {
         login() {
@@ -60,15 +58,10 @@ export default {
                 this.error = 'هیچکی توش نیست!'
             } else {
                 this.$store.dispatch('user/login', this.userData).then(() => {
-                    this.state.isAuth = true
-                    console.log(this.state.isAuth)
                     this.$router.push({ name: 'Home' })
                 })
             }
         },
-    },
-    created() {
-        console.log(this.state.isAuth)
     },
 }
 </script>

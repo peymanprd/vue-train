@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import isAuth from '../store/helpers'
 
 export const namespaced = true
 
@@ -29,4 +28,8 @@ export const actions = {
     },
 }
 
-export const getters = {}
+export const getters = {
+    userPermision(state) {
+        return !!state.userResult
+    },
+}

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import state from '@/store/helpers'
+import store from '@/store'
 
 const routes = [
     {
@@ -22,10 +22,6 @@ const routes = [
         path: '/login',
         name: 'login',
         component: () => import('../views/login.vue'),
-        beforeEnter: (to, from, next) => {
-            console.log(this)
-            next()
-        },
     },
 ]
 
@@ -35,8 +31,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.name !== 'login' && state.isAuth === false) next({ name: 'login' })
-    else if (to.name === 'login' && state.isAuth === true) next(false)
+    const userPermision = store.getters['user/userPermision']
+    if (to.name !== 'login' && !userPermision) next({ name: 'login' })
+    else if (to.name === 'login' && userPermision) next(false)
     else next()
 })
 
