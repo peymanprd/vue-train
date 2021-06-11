@@ -32,6 +32,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const userPermision = store.getters['user/userPermision']
+    console.log(userPermision)
     if (to.name !== 'login' && !userPermision) next({ name: 'login' })
     else if (to.name === 'login' && userPermision) next(false)
     else next()

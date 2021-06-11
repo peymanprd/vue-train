@@ -1,9 +1,11 @@
 <template>
+    <div>
+        {{ userPermision }}
+    </div>
     <div class="login-form form-floating mb-3">
         <div v-if="error" class="alert alert-danger">
             {{ error }}
         </div>
-
         <input
             v-model="userData.email"
             type="email"
@@ -36,6 +38,7 @@
 
 <script>
 import { userPermision } from '@/store/helpers'
+import { mapState } from 'vuex'
 
 export default {
     name: 'loginPage',
@@ -48,6 +51,7 @@ export default {
     }),
     computed: {
         ...userPermision,
+        ...mapState('user', ['userResult']),
     },
     methods: {
         login() {
@@ -58,6 +62,7 @@ export default {
                 this.error = 'هیچکی توش نیست!'
             } else {
                 this.$store.dispatch('user/login', this.userData).then(() => {
+                    this.userResult
                     this.$router.push({ name: 'Home' })
                 })
             }

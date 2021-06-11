@@ -25,7 +25,6 @@
 import { userPermision } from '@/store/helpers'
 
 export default {
-    data: () => ({}),
     computed: {
         ...userPermision,
     },
