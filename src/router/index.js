@@ -22,6 +22,10 @@ const routes = [
         path: '/login',
         name: 'login',
         component: () => import('../views/login.vue'),
+        beforeEnter: (to, from, next) => {
+            console.log(this)
+            next()
+        },
     },
 ]
 

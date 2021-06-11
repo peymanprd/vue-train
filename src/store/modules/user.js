@@ -12,6 +12,10 @@ export const mutations = {
         state.userResult = data
         localStorage.setItem('userCredit', data.token)
     },
+    CLEAR_USER_DATA() {
+        localStorage.removeItem('userCredit')
+        location.reload()
+    },
 }
 
 export const actions = {
@@ -20,9 +24,8 @@ export const actions = {
             .post('https://reqres.in/api/login', userData)
             .then(({ data }) => commit('SET_USER_DATA', data))
     },
-    logout(state) {
-        state.userResult = null
-        localStorage.removeItem('userCredit')
+    logout({ commit }) {
+        commit('CLEAR_USER_DATA')
     },
 }
 

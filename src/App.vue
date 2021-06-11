@@ -2,7 +2,7 @@
     <div class="container">
         <div id="nav" class="my-4">
             <router-link
-                v-if="state.isAuth === false"
+                v-if="!state.isAuth"
                 :to="{ name: 'login' }"
                 class="btn btn-link"
                 >Login</router-link
