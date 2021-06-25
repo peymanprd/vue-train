@@ -54,17 +54,14 @@ export default {
         ...mapState('user', ['userResult']),
     },
     methods: {
-        login() {
+        async login() {
             if (
                 this.userData.email === null &&
                 this.userData.password === null
             ) {
                 this.error = 'هیچکی توش نیست!'
             } else {
-                this.$store.dispatch('user/login', this.userData).then(() => {
-                    this.userResult
-                    this.$router.push({ name: 'Home' })
-                })
+                await this.$store.dispatch('user/login', this.userData)
             }
         },
     },

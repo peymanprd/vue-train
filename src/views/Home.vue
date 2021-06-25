@@ -1,8 +1,11 @@
 <template>
+    <router-link
+        :to="{ name: 'test', params: { admins: admins } }"
+        class="btn btn-light"
+        >GO Test</router-link
+    >
+
     <div class="home mt-4">
-        <button @click="checkLen" type="button" class="btn btn-success">
-            test
-        </button>
         <div>
             <input class="form-control" v-model="qty" @input="handleQty" />
             {{ formattedQty }}
@@ -47,6 +50,13 @@
                 class="btn btn-primary"
             >
                 +
+            </button>
+            <button
+                @click="addUser(index)"
+                type="button"
+                class="btn btn-success"
+            >
+                Add Kon
             </button>
             {{ user.name + ' : ' + user.count }}
         </div>
@@ -181,20 +191,19 @@ export default {
 
         function handleQty(qty) {
             Number(qty).toLocaleString()
-            console.log(handleQtyInput)
+            // console.log(handleQtyInput)
         }
 
-        function fetchUsers() {
-            API_Service.getUsers()
-                .then(res => {
-                    users.value = res.data
-                })
+        async function fetchUsers() {
+            await API_Service.getUsers()
+                .then(res => (users.value = res.data))
                 .catch(err => err)
         }
 
         function addUser(index) {
             user.value = users.value[index]
-            console.log(user.value)
+            // console.log(user.value)
+            this.checKon(user.value.id)
 
             if (!admins.value.length && admins.value.length <= 0) {
                 user.value.count = 1
@@ -216,12 +225,24 @@ export default {
                     admins.value.push(user.value)
                 }
             }
-
-            console.log(admins.value)
+            localStorage.setItem('admins', JSON.stringify(admins.value))
+            // console.log(admins.value)
         }
 
         function userItem(user) {
             item.value = user
+        }
+
+        function checKon(id) {
+            users.value.forEach(item => {
+                if (item.id === id) {
+                    console.log('hooriaaaa!!!')
+                }
+            })
+        }
+
+        function toTest() {
+            console.log()
         }
 
         return {
@@ -239,16 +260,28 @@ export default {
             qty,
             formattedQty,
             handleQtyInput,
+            checKon,
+            toTest,
         }
     },
-
+    provide: ['admins'],
     created() {
         this.fetchUsers()
-    
+        if (localStorage.admins) this.admins = JSON.parse(localStorage.admins)
     },
 
+    /**
+     * @type { number }
+     * mounted is req
+     * by flean to folan
+     */
+
     mounted() {
-        this.modal = new Modal(this.$refs.reference)
+        this.modal = new Modal(this.$refs.reference, {
+            backdrop: 'static',
+            keyboard: false,
+        })
+        // console.log(this.modal)
         this.toast = new Toast(this.$refs.target, { delay: 4000 })
         this.myCanvas = new Offcanvas(this.$refs.mycanvas)
     },

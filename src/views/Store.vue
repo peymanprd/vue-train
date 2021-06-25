@@ -71,7 +71,7 @@ export default {
         editUser(user) {
             this.$store.dispatch('editUser', user)
             
-            console.log(user)
+            // console.log(user)
 
             // this.userss = this.users
             // let userlar = this.userss[index]
@@ -84,7 +84,7 @@ export default {
     },
     mounted() {
         this.myModal = new Modal(this.$refs.myModal)
-        console.log(this.myModal)
+        // console.log(this.myModal)
     },
 }
 </script>
