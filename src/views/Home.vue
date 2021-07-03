@@ -1,11 +1,7 @@
-<template>
-    <router-link
-        :to="{ name: 'test', params: { admins: admins } }"
-        class="btn btn-light"
-        >GO Test</router-link
-    >
-
+<!-- <template>
     <div class="home mt-4">
+        <DatePicker v-model="state.date" />
+
         <div>
             <input class="form-control" v-model="qty" @input="handleQty" />
             {{ formattedQty }}
@@ -127,27 +123,6 @@
                 </div>
             </div>
         </div>
-        <!-- <ModalComp>
-            <div slot="header">
-                hasan
-            </div>
-            <div slot="footer">
-                <button
-                    @click="modal.hide()"
-                    type="button"
-                    class="btn btn-secondary"
-                >
-                    Close
-                </button>
-                <button
-                    @click="addUser(index)"
-                    type="button"
-                    class="btn btn-primary"
-                >
-                    Save changes
-                </button>
-            </div>
-        </ModalComp> -->
         <hr class="my-4" />
 
         <div v-if="admins">
@@ -160,26 +135,31 @@
 
 <script>
 import API_Service from '../services/api'
-import { ref, computed, watchEffect } from 'vue'
+import { ref, reactive, computed, watchEffect } from 'vue'
 import { Modal } from 'bootstrap'
 import { Toast } from 'bootstrap'
 import { Offcanvas } from 'bootstrap'
-import ModalComp from '../components/Modal'
+import TestModal from '../components/Modal'
 import MyCanvas from '../components/MyCanvas'
+import DatePicker from '../components/DatePicker'
 
 export default {
     name: 'Home',
-    components: { ModalComp, MyCanvas },
+    components: { TestModal, DatePicker, MyCanvas },
     setup() {
         const user = ref({})
         const users = ref()
         const admins = ref([])
-        const date = ref('1397/02/02')
+        const date = ref('1399/12/16')
         const item = ref({})
         const modal = ref(null)
         const toast = ref(null)
         const myCanvas = ref(null)
+        const testModal = ref(null)
         const qty = ref(0)
+        const state = reactive({
+            date: '',
+        })
 
         const handleQtyInput = computed(() => {
             return Number(qty.value).toLocaleString()
@@ -262,6 +242,8 @@ export default {
             handleQtyInput,
             checKon,
             toTest,
+            testModal,
+            state,
         }
     },
     provide: ['admins'],
@@ -270,20 +252,16 @@ export default {
         if (localStorage.admins) this.admins = JSON.parse(localStorage.admins)
     },
 
-    /**
-     * @type { number }
-     * mounted is req
-     * by flean to folan
-     */
-
     mounted() {
         this.modal = new Modal(this.$refs.reference, {
             backdrop: 'static',
             keyboard: false,
         })
+        // this.testModal = new Modal(this.$refs.testmodal)
+
         // console.log(this.modal)
         this.toast = new Toast(this.$refs.target, { delay: 4000 })
         this.myCanvas = new Offcanvas(this.$refs.mycanvas)
     },
 }
-</script>
+</script> -->

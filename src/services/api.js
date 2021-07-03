@@ -1,17 +1,20 @@
 import axios from 'axios'
-// import { createClient } from '@supabase/supabase-js'
 
-const apiClient = axios.create({
-    baseURL: 'https://my-json-server.typicode.com/peymanprd/API_db',
-    withCredentials: true,
+export const apiClient = axios.create({
+    baseURL: 'http://127.0.0.1:8000',
+    withCredentials: false,
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
     },
 })
 
 export default {
-    getUsers() {
-        return apiClient.get('/users')
+    login(user) {
+        return apiClient.post('/auth/login', user)
+    },
+    getProducts() {
+        return apiClient.get('/products')
     },
 }

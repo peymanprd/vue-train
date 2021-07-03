@@ -15,12 +15,14 @@
             >
                 logout
             </button>
-            <router-link :to="{ name: 'Home' }" class="btn btn-link"
-                >Home</router-link
-            >
-
             <router-link :to="{ name: 'About' }" class="btn btn-link"
-                >About</router-link
+            >About</router-link
+            >
+            <router-link :to="{ name: 'intest' }" class="btn btn-link"
+                >Intest Peo</router-link
+            >
+            <router-link :to="{ name: 'test' }" class="btn btn-link"
+                >Test</router-link
             >
         </div>
         <router-view />
@@ -35,7 +37,8 @@ export default {
     },
     methods: {
         async logout() {
-            await this.$store.dispatch('user/logout')
+            await this.$store
+                .dispatch('user/logout')
                 .then(() => this.$router.push({ name: 'login' }))
         },
     },

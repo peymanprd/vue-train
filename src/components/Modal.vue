@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" tabindex="-1" :ref="ref">
+    <div :ref="ref" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -17,10 +17,10 @@
 </template>
 <script>
 export default {
+    name: 'TestModal',
     props: {
         ref: {
             type: String,
-            default: 'reference',
         },
     },
 }

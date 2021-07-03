@@ -1,5 +1,5 @@
 <template>
-    <div :ref="reference" :class="class" tabindex="-1" :id="id">
+    <div :class="class" tabindex="-1" :id="id">
         <header class="offcanvas-header">
             <slot name="header"></slot>
         </header>
@@ -16,11 +16,7 @@ export default {
             type: String,
         },
         id: {
-            type: [String, Number],
-        },
-        reference: {
             type: String,
-            default: 'mycanvas',
         },
     },
 }
