@@ -14,6 +14,7 @@ export const mutations = {
         localStorage.setItem('userCredit', data.access_token)
         apiClient.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`
     },
+
     CLEAR_USER_DATA() {
         localStorage.clear()
         location.reload()
@@ -27,6 +28,7 @@ export const actions = {
             router.push({ name: 'About' })
         })
     },
+    
     async logout({ commit }) {
         await commit('CLEAR_USER_DATA')
     },

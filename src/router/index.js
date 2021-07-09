@@ -1,5 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import Home from '../views/Home.vue'
+import store from '@/store'
+
+const checkPermission = (to, from, next) => {
+    store.dispatch('user/getSecurity', to.meta.area).then(() => {
+        let userPermission = store.state.user['userPermission']
+        let typePermission = `${userPermission}.${to.meta.type}`
+        if (typePermission) next()
+        else false
+    })
+}
+
+const isAllowed = (to, from, next) => {
+    console.log(to.meta.area + ' & type is : ' + to.meta.type)
+    next()
+}
 
 const routes = [
     {
@@ -11,6 +25,9 @@ const routes = [
                 path: '',
                 name: 'About',
                 component: () => import('../views/About.vue'),
+                meta: { area: 'person', type: 'Read' },
+                component: () => import('../views/test.vue'),
+                beforeEnter: [isAllowed],
             },
             {
                 path: 'store',
@@ -20,12 +37,16 @@ const routes = [
             {
                 path: 'test',
                 name: 'test',
+                meta: { area: 'factor', type: 'Write' },
                 component: () => import('../views/test.vue'),
+                beforeEnter: [isAllowed],
             },
             {
                 path: 'intest',
                 name: 'intest',
+                meta: { area: 'income', type: 'Access' },
                 component: () => import('../views/Intest.vue'),
+                beforeEnter: [isAllowed],
             },
         ],
     },
@@ -51,7 +72,6 @@ router.beforeEach((to, from, next) => {
     const userCredit = !!localStorage.userCredit
     if (to.matched.some(record => record.meta.isAuth) && !userCredit)
         next({ name: 'login' })
-    if (to.name === 'login' && userCredit) next({ name: 'About' })
     else next()
 })
 

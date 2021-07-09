@@ -1,5 +1,12 @@
 <template>
     <h5>PRODUCTS</h5>
+    <!-- <button @click.prevent="myt.show()" class="btn btn-success">
+        show toast
+    </button>
+    <toasti ref="myt" @hide="myt.hide()">
+        <template #message>salam kon</template>
+    </toasti> -->
+
     <button @click="getProducts" class="btn btn-primary mb-2">
         <span
             v-if="isLoading"
@@ -27,13 +34,18 @@
         </li>
     </ul>
 </template>
+
 <script>
 import { mapState } from 'vuex'
+import { Toast } from 'bootstrap'
+// import toasti from '@/components/Toast'
 
 export default {
     name: 'test',
+    // components: { toasti },
     data: () => ({
         isLoading: false,
+        myt: null,
     }),
     computed: {
         ...mapState('products', ['products', 'candids']),
@@ -48,6 +60,11 @@ export default {
         addProduct(product) {
             this.$store.dispatch('products/addProduct', product)
         },
+    },
+    mounted() {
+        // this.myt = new Toast(this.$refs.myt)
+        // this.myt.show()
+        // console.log(this.myt)
     },
 }
 </script>

@@ -1,4 +1,5 @@
 import API from '@/services/api'
+import { isThere, salamKon } from '@/utils/isThere'
 
 export const namespaced = true
 
@@ -11,49 +12,41 @@ export const mutations = {
     SET_PRODUCTS(state, data) {
         state.products = data
     },
+
     ADD_PRODUCT(state, product) {
+        let stateCandids = state.candids
         product.count = 1
-        state.candids.push(product)
+        stateCandids.push(product)
+        // console.log(product)
     },
 }
 
 export const actions = {
-    getProducts({ commit }) {
-        API.getProducts().then(({ data }) => commit('SET_PRODUCTS', data))
+    async getProducts({ commit }) {
+        // API.getProducts().then(({ data }) => commit('SET_PRODUCTS', data))
+        try {
+            let response = await API.getProducts()
+            let products = response.data
+            commit('SET_PRODUCTS', products)
+        } catch {
+            console.log('Akh Akh Akhh!!!')
+        }
     },
 
-    checkExistence({ state }, target) {
-        let spot = -1
-        let status = false
-        // let checkID = target.id
-        // let checkID_Unit = target.id && target.dNumberSelect
-        // let checkID_Unit_Store = target.id && target.dNumberSelect && target.iStoreID
-        // let checkID_Unit_Store_Barcode = target.id && target.dNumberSelect && target.iStoreID && target.barcode
-        // let requireCondition = checkID
-        // if(this.$LS.rowStore) {
-        //     requireCondition = checkID_Unit_Store
-        // }
+    addProduct({ commit, state }, product) {
+        let stateCandids = state.candids
+        let is = isThere(stateCandids, product.id)
 
-        state.candids.some((item, index) => {
-            if (item.id === target.id) {
-                status = true
-                spot = index
-            }
-        })
-        return { spot: spot, status: status }
-    },
+        let hi = salamKon(product.name)
 
-    async addProduct({ commit, dispatch, state }, product) {
-        if (state.candids.length <= 0) {
+        if (stateCandids.length <= 0) {
             commit('ADD_PRODUCT', product)
         } else {
-            let existence = await dispatch('checkExistence', product)
-            if (existence.status) {
-                state.candids[existence.spot].count++
-            } else {
-                commit('ADD_PRODUCT', product)
-            }
+            if (is.status) stateCandids[is.spot].count++
+            else commit('ADD_PRODUCT', product)
         }
+
+        localStorage.setItem('products', JSON.stringify(stateCandids))
     },
 }
 
