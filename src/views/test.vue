@@ -1,12 +1,12 @@
 <template>
     <h5>PRODUCTS</h5>
-    <!-- <button @click.prevent="myt.show()" class="btn btn-success">
+    <button @click.prevent="myt.show()" class="btn btn-success">
         show toast
     </button>
     <toasti ref="myt" @hide="myt.hide()">
         <template #message>salam kon</template>
-    </toasti> -->
-
+    </toasti>
+    <input type="number" v-model="hasan" />
     <button @click="getProducts" class="btn btn-primary mb-2">
         <span
             v-if="isLoading"
@@ -14,13 +14,13 @@
             role="status"
             aria-hidden="true"
         ></span>
-        <span v-if="isLoading">صبر کن یکم...</span>
-        <span v-if="!isLoading">مردم را نیشان بده</span>
+        <span v-if="isLoading">wait...</span>
+        <span v-if="!isLoading">fetch products list</span>
     </button>
 
     <div v-for="product in products" :key="product.id" class="my-2">
         <button
-            @click="addProduct(product)"
+            @click="sendProduct(product)"
             class="btn btn-outline-dark btn-sm ml-2"
         >
             ADD
@@ -36,35 +36,38 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import { Toast } from 'bootstrap'
-// import toasti from '@/components/Toast'
+import toasti from '@/components/Toast'
 
 export default {
     name: 'test',
-    // components: { toasti },
+    components: { toasti },
     data: () => ({
         isLoading: false,
         myt: null,
+        hasan: 0,
     }),
+    watch: {
+        storeID() {
+            this.getProducts()
+        },
+    },
     computed: {
         ...mapState('products', ['products', 'candids']),
+        ...mapGetters('products', ['storeID']),
     },
     methods: {
-        getProducts() {
-            this.isLoading = true
-            this.$store
-                .dispatch('products/getProducts')
-                .then(() => (this.isLoading = false))
-        },
-        addProduct(product) {
-            this.$store.dispatch('products/addProduct', product)
+        ...mapActions('products', ['getProducts', 'addProduct']),
+        sendProduct(product) {
+            this.addProduct(product)
+            console.log(product)
         },
     },
     mounted() {
-        // this.myt = new Toast(this.$refs.myt)
+        this.myt = new Toast(this.$refs.myt)
         // this.myt.show()
-        // console.log(this.myt)
+        console.log(this.myt)
     },
 }
 </script>

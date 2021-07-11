@@ -759,7 +759,7 @@
             ref="filterOptionsCanvas"
             class="offcanvas offcanvas-bottom filterOptions"
             tabindex="-1"
-            id="stuffFilterOptions"
+            id="getStuffsOptions"
             aria-labelledby="offcanvasBottomLabel"
         >
             <div class="offcanvas-header">
@@ -789,7 +789,7 @@
                     >
                 </div>
                 <div class="d-grid gap-2 mt-4">
-                    <button @click="stuffFilter" class="btn btn-primary">
+                    <button @click="getStuffs" class="btn btn-primary">
                         اعمال فیلتر
                     </button>
                 </div>
@@ -1045,7 +1045,7 @@
                 </div>
                 <BaseInput
                     placeholder="جستجو در انبار بر اساس نام یا کد کالا یا بارکد"
-                    @input="stuffFilter"
+                    @input="getStuffs"
                     v-model="storeStuffFilter"
                 />
                 <div class="filter-options my-2">
@@ -1129,7 +1129,7 @@
                             <button
                                 class="btn btn-primary"
                                 type="button"
-                                data-bs-target="#stuffFilterOptions"
+                                data-bs-target="#getStuffsOptions"
                                 @click="filterOptionsCanvas.show()"
                                 aria-controls="offcanvasBottom"
                             >
@@ -1160,7 +1160,7 @@
                                                                   (stuffSecondSingleClass.iID = null)
                                                             : false
                                                     ),
-                                                    stuffFilter(),
+                                                    getStuffs(),
                                                 ]
                                             "
                                             href="#"
@@ -1707,8 +1707,8 @@ export default {
             this.config.addStuffEvent = false
             this.config.isSearch = true
         },
-        async personFilter() {
-            await EventService.getPersons(this.personSearchKey)
+        personFilter() {
+            EventService.getPersons(this.personSearchKey)
                 .then(res => {
                     this.persons = res.data
                     this.persons.map(person => {
@@ -1764,8 +1764,8 @@ export default {
             this.config.addItemEvent = false
             this.config.show = true
         },
-        async storeFilter() {
-            await EventService.getStores(this.storeSearchKey)
+        storeFilter() {
+            EventService.getStores(this.storeSearchKey)
                 .then(res => {
                     this.stores = res.data
                     if (localStorage.store) {
@@ -1781,7 +1781,7 @@ export default {
                         }
                         this.factureData.iStoreID = this.store.iID
                     }
-                    this.stuffFilter()
+                    this.getStuffs()
                     this.isLoading = false
                 })
                 .catch(() => (this.errorState = true))
@@ -1808,50 +1808,50 @@ export default {
                 iID: this.stores[index].iID,
                 sName: this.stores[index].sName,
             }
-            this.stuffFilterInStuffList()
+            this.getStuffsInStuffList()
             this.storeFilterCanvas.hide()
         },
-        async stuffFilterInStuffList() {
-            await EventService.getStuffsStore(this.storeInStuffList.iID)
+        getStuffsInStuffList() {
+            EventService.getStuffsStore(this.storeInStuffList.iID)
                 .then(res => {
                     this.stuffs = res.data
                 })
                 .catch(err => err)
         },
         
-        async stuffFirstClass() {
+        stuffFirstClass() {
             await EventService.getStuffFirstClass()
                 .then(({ data }) => {
                     this.stuffFirstClassGroup = data
                     this.config.stuffFirstClassEvent = true
                     this.config.stuffSecondClassEvent = false
-                    // this.stuffFilter()
+                    // this.getStuffs()
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
-        async stuffSecondClass(id, name) {
+        stuffSecondClass(id, name) {
             await EventService.getStuffSecondClass(id)
                 .then(({ data }) => {
                     this.stuffSingleClass = { iID: id, sName: name }
                     this.stuffSecondClassGroup = data
                     this.config.stuffFirstClassEvent = false
                     this.config.stuffSecondClassEvent = true
-                    this.stuffFilter()
+                    this.getStuffs()
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
-        async stuffThirdClass(id, name) {
+        stuffThirdClass(id, name) {
             await EventService.getStuffThirdClass(this.stuffSingleClass.iID, id)
                 .then(({ data }) => {
                     this.stuffSecondSingleClass = { iID: id, sName: name }
                     this.stuffThirdClassGroup = data
                     this.config.stuffSecondClassEvent = false
-                    this.stuffFilter()
+                    this.getStuffs()
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
-        async stuffFilter() {
-            await EventService.getStuffsStore(
+        getStuffs() {
+            EventService.getStuffsStore(
                 this.store.iID,
                 Number(this.stuffsStock),
                 this.storeStuffFilter,
@@ -2379,7 +2379,7 @@ export default {
             this.viewCashAndAccounts()
         },
         // end registeration facture
-        async registerFacture() {
+        registerFacture() {
             if (!!Object.keys(this.person).length) {
                 this.factureData.dSumPaid = this.factureSumPaid
                 this.factureData.dNesieh = this.factureNesieh
@@ -2435,7 +2435,7 @@ export default {
             // })
         },
         // fetch personnels data and show in selectors
-        async getPersonnels() {
+        getPersonnels() {
             const marketers = await EventService.getPersonnels(1).then(
                 res => res.data
             )
@@ -2466,7 +2466,7 @@ export default {
             this.factureData.sDesc = this.factureDesc
             this.descModal.hide()
         },
-        async getCashes() {
+        getCashes() {
             // fetch all cashes/pose accounts/accounts
             await EventService.getCashAndAccounts()
                 .then(({ data }) => {
@@ -2486,7 +2486,7 @@ export default {
                 })
                 .catch(err => new Error(err))
         },
-        async getAccounts() {
+        getAccounts() {
             // fetch pose accounts
             await EventService.getAccounts(1).then(({ data }) => {
                 this.accountsPose = data
@@ -2547,7 +2547,7 @@ export default {
             return randomstring
         },
     },
-    async created() {
+        created() {
         if (localStorage.fStuffs)
             this.factureData.stuffs = JSON.parse(localStorage.fStuffs)
         this.storeFilter()

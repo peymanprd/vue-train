@@ -1,6 +1,5 @@
 export const state = {
     // globals
-    isLoading: true,
     personnelsEvent: false,
     cashesAndAccountsEvent: false,
     recipientsEvent: false,
@@ -204,7 +203,7 @@ export const mutations = {
 export const actions = {
     async getPersons({ commit, state }) {
         await EventService.getPersons(state.mediator['personSearchKey'])
-            .then(({ data }) => commit('SET_PERSONS', data))
+            .then(({ persons }) => commit('SET_PERSONS', persons))
             .catch(err => err)
     },
 
@@ -214,11 +213,14 @@ export const actions = {
 
     async getStores({ commit, dispatch, state }) {
         await EventService.getStores(state.mediator['storeSearchKey'])
-            .then(({ data }) => {
-                commit('SET_STORES', data)
+            .then(({ stores }) => {
+                commit('SET_STORES', stores)
                 dispatch('getStuffs')
             })
             .catch(err => err)
+    },
+    selectStore(store) {
+        commit('SET_STORE', store)
     },
 }
 

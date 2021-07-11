@@ -26,7 +26,6 @@ const routes = [
                 name: 'About',
                 component: () => import('../views/About.vue'),
                 meta: { area: 'person', type: 'Read' },
-                component: () => import('../views/test.vue'),
                 beforeEnter: [isAllowed],
             },
             {

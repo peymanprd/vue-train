@@ -7,4 +7,7 @@ export default createStore({
         user,
         products,
     },
+    state: {
+        isLoading: false,
+    },
 })

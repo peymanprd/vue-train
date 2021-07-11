@@ -1,5 +1,5 @@
 import API from '@/services/api'
-import { isThere, salamKon } from '@/utils/isThere'
+import { isThere } from '@/utils/isThere'
 
 export const namespaced = true
 
@@ -9,8 +9,8 @@ export const state = {
 }
 
 export const mutations = {
-    SET_PRODUCTS(state, data) {
-        state.products = data
+    SET_PRODUCTS(state, products) {
+        state.products = products
     },
 
     ADD_PRODUCT(state, product) {
@@ -28,6 +28,7 @@ export const actions = {
             let response = await API.getProducts()
             let products = response.data
             commit('SET_PRODUCTS', products)
+            console.log('ejra shod!')
         } catch {
             console.log('Akh Akh Akhh!!!')
         }
@@ -36,8 +37,6 @@ export const actions = {
     addProduct({ commit, state }, product) {
         let stateCandids = state.candids
         let is = isThere(stateCandids, product.id)
-
-        let hi = salamKon(product.name)
 
         if (stateCandids.length <= 0) {
             commit('ADD_PRODUCT', product)
@@ -51,5 +50,5 @@ export const actions = {
 }
 
 export const getters = {
-    //...
+    storeID: state => state.candids.length,
 }
