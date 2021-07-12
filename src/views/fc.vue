@@ -171,7 +171,13 @@
                                 <div class="col">
                                     <BaseInput
                                         label="تخفیف (درصدی)"
-                                        @input="$filters.checkValue($event, true, 100)"
+                                        @input="
+                                            $filters.checkValue(
+                                                $event,
+                                                true,
+                                                100
+                                            )
+                                        "
                                         v-model.number="editStuff.dDiscount"
                                         maxlength="100"
                                         type="number"
@@ -279,7 +285,15 @@
                     <div v-if="stuffDetailsEvent" class="modal-body">
                         <div class="my-2">
                             <img
+                                v-if="stuff.sPicture"
                                 :src="'/img/stuffs/' + stuff.sPicture"
+                                :alt="stuff.Name"
+                                width="80"
+                                class="mb-4"
+                            />
+                            <img
+                                v-else
+                                src="@/assets/images/stuff-img.png"
                                 :alt="stuff.Name"
                                 width="80"
                                 class="mb-4"
@@ -395,11 +409,12 @@
                                 >
                                     <button
                                         @click="viewRecipients()"
-                                        class="btn btn-dark mx-2"
+                                        class="btn btn-dark align-self-center mx-2"
                                     >
+                                        دریافت کننده
                                         <BIconPencilSquare />
                                     </button>
-                                    <select
+                                    <!-- <select
                                         v-model="factureData.iCashID"
                                         class="form-select"
                                         :disabled="!paidEvent"
@@ -411,7 +426,7 @@
                                         >
                                             {{ cash.sName }}
                                         </option>
-                                    </select>
+                                    </select> -->
                                 </div>
                                 <div class="end-sums my-4 text-center">
                                     <div>
@@ -446,13 +461,58 @@
                                     </div>
                                 </div>
                                 <hr class="divider my-4" />
-                                <div class="recipientsList">
-                                    <div v-if="factureData.dCashAmount">
-                                        <!-- inja jaye cash/pose/account -->
+                                <div
+                                    v-if="!paidEvent"
+                                    class="recipientsList text-center"
+                                >
+                                    <div
+                                        v-if="
+                                            cashID !== 0 &&
+                                                cashesAndAccounts.cashAmount !==
+                                                    0
+                                        "
+                                    >
+                                        <small>{{
+                                            `پرداخت با حساب ( ${cashName} ) به مبلغ : ${cashesAndAccounts.cashAmount.toLocaleString()} ریال`
+                                        }}</small>
+                                    </div>
+                                    <div
+                                        v-if="
+                                            accountID !== 0 &&
+                                                cashesAndAccounts.accountAmount1 !==
+                                                    0
+                                        "
+                                    >
+                                        <small>{{
+                                            `پرداخت با کارت خوان ( ${poseName} ) به مبلغ : ${cashesAndAccounts.accountAmount1.toLocaleString()} ریال`
+                                        }}</small>
+                                    </div>
+                                    <div
+                                        v-if="
+                                            accountID2 !== 0 &&
+                                                cashesAndAccounts.accountAmount2 !==
+                                                    0
+                                        "
+                                    >
+                                        <small>{{
+                                            `پرداخت با حساب ( ${accountName} ) به مبلغ : ${cashesAndAccounts.accountAmount2.toLocaleString()} ریال`
+                                        }}</small>
+                                    </div>
+                                    <div
+                                        v-if="
+                                            accountID3 !== 0 &&
+                                                cashesAndAccounts.accountAmount3 !==
+                                                    0
+                                        "
+                                    >
+                                        <small>{{
+                                            `پرداخت با حواله ( ${havaleName} ) به مبلغ : ${cashesAndAccounts.accountAmount3.toLocaleString()} ریال`
+                                        }}</small>
                                     </div>
                                 </div>
                                 <div>
                                     <BaseInput
+                                        v-if="!paidEvent"
                                         v-model.number="factureSumPaid"
                                         label="مبلغ پرداخت نقدی"
                                         type="number"
@@ -542,6 +602,12 @@
                                         />
                                     </div>
                                 </form>
+                                <div
+                                    v-if="recipientsError.status"
+                                    class="py-2 px-4 bg-dark text-white rounded shadow-lg position-absolute bottom-20 start-50 translate-middle-x"
+                                >
+                                    {{ recipientsError.message }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -553,7 +619,7 @@
                             <div class="cash-items row align-items-center g-3">
                                 <div class="col m-0">
                                     <select
-                                        v-model="cashID"
+                                        v-model.number="cashID"
                                         class="form-select"
                                     >
                                         <option value="0">انتخاب صندوق</option>
@@ -568,7 +634,9 @@
                                 </div>
                                 <div class="col-7 m-0">
                                     <BaseInput
-                                        v-model="cashesAndAccounts.cashAmount"
+                                        v-model.number="
+                                            cashesAndAccounts.cashAmount
+                                        "
                                         type="number"
                                     />
                                 </div>
@@ -578,7 +646,7 @@
                             >
                                 <div class="col m-0">
                                     <select
-                                        v-model="accountID"
+                                        v-model.number="accountID"
                                         class="form-select"
                                     >
                                         <option value="0"
@@ -589,13 +657,13 @@
                                             :key="pose.iID"
                                             :value="pose.iID"
                                         >
-                                            {{ pose.sBankName }}
+                                            {{ pose.sName }}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-7 m-0">
                                     <BaseInput
-                                        v-model="
+                                        v-model.number="
                                             cashesAndAccounts.accountAmount1
                                         "
                                         type="number"
@@ -607,7 +675,7 @@
                             >
                                 <div class="col m-0">
                                     <select
-                                        v-model="accountID2"
+                                        v-model.number="accountID2"
                                         class="form-select"
                                     >
                                         <option value="0">انتخاب حساب</option>
@@ -616,13 +684,13 @@
                                             :key="account.iID"
                                             :value="account.iID"
                                         >
-                                            {{ account.sBankName }}
+                                            {{ account.sName }}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-7 m-0">
                                     <BaseInput
-                                        v-model="
+                                        v-model.number="
                                             cashesAndAccounts.accountAmount2
                                         "
                                         type="number"
@@ -634,7 +702,7 @@
                             >
                                 <div class="col m-0">
                                     <select
-                                        v-model="accountID3"
+                                        v-model.number="accountID3"
                                         class="form-select"
                                     >
                                         <option value="0">انتخاب حواله</option>
@@ -643,13 +711,13 @@
                                             :key="account.iID"
                                             :value="account.iID"
                                         >
-                                            {{ account.sBankName }}
+                                            {{ account.sName }}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-7 m-0">
                                     <BaseInput
-                                        v-model="
+                                        v-model.number="
                                             cashesAndAccounts.accountAmount3
                                         "
                                         type="number"
@@ -678,6 +746,12 @@
                                         : 'مجموع : ' + 0
                                 }}
                             </div>
+                        </div>
+                        <div
+                            v-if="recipientsError.status"
+                            class="py-2 px-4 bg-dark text-white rounded shadow-lg position-absolute bottom-20 start-50 translate-middle-x"
+                        >
+                            {{ recipientsError.message }}
                         </div>
                     </div>
                     <!-- Footer : Modal -->
@@ -759,7 +833,7 @@
             ref="filterOptionsCanvas"
             class="offcanvas offcanvas-bottom filterOptions"
             tabindex="-1"
-            id="getStuffsOptions"
+            id="getStuffsStoreOptions"
             aria-labelledby="offcanvasBottomLabel"
         >
             <div class="offcanvas-header">
@@ -789,7 +863,10 @@
                     >
                 </div>
                 <div class="d-grid gap-2 mt-4">
-                    <button @click="getStuffs" class="btn btn-primary">
+                    <button
+                        @click.prevent="getStuffsStore"
+                        class="btn btn-primary"
+                    >
                         اعمال فیلتر
                     </button>
                 </div>
@@ -797,9 +874,9 @@
         </div>
         <!-- store filter canvas -->
         <div
-            ref="storeFilterCanvas"
-            class="offcanvas offcanvas-bottom storeFilter"
-            id="storeFilter"
+            ref="getStoresCanvas"
+            class="offcanvas offcanvas-bottom getStores"
+            id="getStores"
             aria-labelledby="offcanvasBottomLabel"
         >
             <div class="offcanvas-header">
@@ -807,20 +884,20 @@
                     type="button"
                     class="btn-close text-reset"
                     aria-label="Close"
-                    @click="storeFilterCanvas.hide()"
+                    @click="getStoresCanvas.hide()"
                 ></button>
             </div>
             <div class="offcanvas-body full-height">
                 <BaseInput
                     placeholder="جستجو بر اساس نام و کد انبار"
-                    @input="storeFilter"
+                    @input.stop="getStores"
                     v-model="storeSearchKey"
                 />
                 <div class="list-group mt-1">
                     <a
                         v-for="(store, index) in stores"
                         :key="index"
-                        @click.prevent="setStoreinStuffList(index)"
+                        @click.prevent="selectStoreinStuffList(store)"
                         href="#"
                         class="list-group-item"
                         aria-current="true"
@@ -872,22 +949,22 @@
                 </div>
                 <div class="row">
                     <BaseInput
-                        v-model="factureFinalize.dDiscount"
+                        v-model.number="factureFinalize.dDiscount"
                         label="تخفیف مبلغی"
                         type="number"
                     />
                     <BaseInput
-                        v-model="factureFinalize.dTaxPercent"
+                        v-model.number="factureFinalize.dTaxPercent"
                         label="مالیات (درصد)"
                         type="number"
                     />
                     <BaseInput
-                        v-model="factureFinalize.dImpositionPercent"
+                        v-model.number="factureFinalize.dImpositionPercent"
                         label="عوارض (درصد)"
                         type="number"
                     />
                     <BaseInput
-                        v-model="factureFinalize.dTransportRent"
+                        v-model.number="factureFinalize.dTransportRent"
                         label="کرایه حمل"
                         type="number"
                     />
@@ -924,7 +1001,11 @@
             </div>
             <div class="d-flex justify-content-between align-items-center">
                 <span>
-                    {{ config.show ? 'فاکتور فروش' : '' }}
+                    {{
+                        config.show
+                            ? `فاکتور فروش به شماره : ${factureNumber}`
+                            : ''
+                    }}
                 </span>
                 <span>
                     {{
@@ -982,22 +1063,25 @@
                 </div>
                 <BaseInput
                     placeholder="جستجو بر اساس نام و شماره تلفن"
-                    @input="personFilter"
+                    @keyup.stop="getPersons"
                     v-model="personSearchKey"
                 />
                 <div v-if="!isLoading" class="list-group list-group-flush mt-1">
                     <Person
                         v-for="(person, index) in persons"
-                        :key="person.iID"
+                        :key="index"
                         :person="person"
                         :factureData="factureData"
-                        @setPerson="setPerson(index)"
+                        @selectPerson="selectPerson(person)"
                         class="list-group-item"
                         :aria-current="config.isActive"
                     />
                 </div>
                 <div v-else class="d-flex justify-content-center my-4">
-                    <div class="spinner-border" role="status"></div>
+                    <div
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                    ></div>
                 </div>
             </div>
             <div v-if="config.addStoreEvent" class="f-store col">
@@ -1012,14 +1096,14 @@
                 </div>
                 <BaseInput
                     placeholder="جستجو بر اساس نام یا کد انبار"
-                    @input="storeFilter"
+                    @keyup.stop="getStores"
                     v-model="storeSearchKey"
                 />
                 <div v-if="!isLoading" class="list-group mt-1">
                     <a
                         v-for="(store, index) in stores"
                         :key="index"
-                        @click.prevent="setStore(index)"
+                        @click.prevent="selectStore(store)"
                         href="#"
                         class="list-group-item"
                         aria-current="true"
@@ -1045,28 +1129,39 @@
                 </div>
                 <BaseInput
                     placeholder="جستجو در انبار بر اساس نام یا کد کالا یا بارکد"
-                    @input="getStuffs"
-                    v-model="storeStuffFilter"
+                    @keyup.stop="getStuffsStore"
+                    v-model="stuffSearchKey"
                 />
                 <div class="filter-options my-2">
+                    <div class="fixed-bottom p-3">
+                        <button
+                            class="btn btn-primary btn-lg rounded-circle shadow-lg"
+                            type="button"
+                            data-bs-target="#getStuffsStoreOptions"
+                            @click="filterOptionsCanvas.show()"
+                            aria-controls="offcanvasBottom"
+                        >
+                            <BIconFunnelFill />
+                        </button>
+                    </div>
                     <div
                         class="row d-flex justify-content-between align-items-center"
                     >
-                        <a
-                            data-bs-target="#storeFilter"
-                            @click="storeFilterCanvas.show()"
+                        <div
+                            data-bs-target="#getStores"
+                            @click="getStoresCanvas.show()"
                         >
                             {{
                                 storeInStuffList.sName
                                     ? storeInStuffList.sName
                                     : store.sName
                             }}
-                        </a>
+                        </div>
                         <div v-if="config.stuffFirstClassEvent" class="col">
                             <div
                                 v-for="stuffFirstClass in stuffFirstClassGroup"
                                 :key="stuffFirstClass.iID"
-                                class="btn-group btn-group-sm"
+                                class="btn-group btn-group-sm mx-1"
                                 role="group"
                                 aria-label="Basic outlined example"
                             >
@@ -1125,24 +1220,13 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col my-2">
-                            <button
-                                class="btn btn-primary"
-                                type="button"
-                                data-bs-target="#getStuffsOptions"
-                                @click="filterOptionsCanvas.show()"
-                                aria-controls="offcanvasBottom"
-                            >
-                                <BIconSliders />
-                            </button>
-                        </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <nav aria-label="breadcrumb">
                                 <ol
                                     class="breadcrumb mb-0 p-2"
-                                    style="--bs-breadcrumb-divider: '>';"
+                                    style="--bs-breadcrumb-divider: '&#9666;'"
                                     aria-label="breadcrumb"
                                 >
                                     <li class="breadcrumb-item">
@@ -1151,16 +1235,13 @@
                                             @click="
                                                 ;[
                                                     stuffFirstClass,
-                                                    (config.stuffFirstClassEvent = true),
                                                     (stuffSingleClass.sName = null),
-                                                    (stuffSingleClass.iID = null)(
-                                                        stuffSecondSingleClass.sName ||
-                                                            stuffSecondSingleClass.iID
-                                                            ? (stuffSecondSingleClass.sName = null) &&
-                                                                  (stuffSecondSingleClass.iID = null)
-                                                            : false
-                                                    ),
-                                                    getStuffs(),
+                                                    (stuffSingleClass.iID = null),
+                                                    stuffSecondSingleClass.sName ||
+                                                    stuffSecondSingleClass.iID
+                                                        ? (stuffSecondSingleClass.sName = null) &&
+                                                          (stuffSecondSingleClass.iID = null)
+                                                        : false,
                                                 ]
                                             "
                                             href="#"
@@ -1174,7 +1255,6 @@
                                         <a
                                             @click="
                                                 stuffSecondClass,
-                                                    (config.stuffSecondClassEvent = true),
                                                     (stuffSecondSingleClass.sName = null),
                                                     (stuffSecondSingleClass.iID = null)
                                             "
@@ -1202,17 +1282,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="list-group mt-1">
+                <div v-if="!isLoading" class="stuffs__List list-group mt-1">
                     <Stuff
                         v-for="(stuff, index) in stuffs"
                         :key="index"
                         :stuff="stuff"
                         @stuffDetailsModal="
-                            targetStuff(index, true), viewStuffDetails()
+                            targetStuff(stuff, true), viewStuffDetails()
                         "
                         :factureData="factureData"
                         @addStuffModal="
-                            targetStuff(index, true),
+                            targetStuff(stuff, true),
                                 [
                                     stuffModal.show(),
                                     (modalAlert.isVisible = true),
@@ -1220,6 +1300,12 @@
                         "
                         class="list-group-item"
                     />
+                </div>
+                <div v-else class="d-flex justify-content-center my-4">
+                    <div
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                    ></div>
                 </div>
                 <div v-if="config.addFilterEvent" class="filter col">
                     <input
@@ -1350,7 +1436,8 @@
                         </small>
                         <button
                             @click="
-                                targetStuff(index, false), editStuffModal.show()
+                                targetStuff(aStuff, false),
+                                    editStuffModal.show()
                             "
                             class="btn"
                         >
@@ -1361,7 +1448,9 @@
                             class="stuff-counter d-flex flex-row flex-wrap justify-content-between align-items-center border rounded"
                         >
                             <button
-                                @click="targetStuff(index), addStuffToFacture()"
+                                @click="
+                                    targetStuff(aStuff), addStuffToFacture()
+                                "
                                 class="stuff-counter__add btn btn-sm shadow-sm"
                             >
                                 <BIconPlus />
@@ -1373,7 +1462,8 @@
                             </div>
                             <button
                                 @click="
-                                    targetStuff(index), removeStuffFromFacture()
+                                    targetStuff(aStuff),
+                                        removeStuffFromFacture()
                                 "
                                 class="stuff-counter__remove btn btn-sm shadow-sm"
                             >
@@ -1401,7 +1491,7 @@
                                         ;(config.addStuffEvent = true) &&
                                             (config.show = false)
                                     "
-                                    class="align-self-end btn btn-primary btn-lg rounded-pill shadow-md"
+                                    class="align-self-end btn btn-primary btn-lg rounded-pill shadow-lg"
                                 >
                                     اضافه کردن کالا
                                     <BIconPlus />
@@ -1473,12 +1563,12 @@ import EventService from '@/services/EventService'
 import Person from '@/components/Person'
 import Stuff from '@/components/Stuff'
 import { Modal, Offcanvas, Toast } from 'bootstrap'
-import { mapState } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
+
 export default {
     name: 'FactureStore',
     components: { Person, Stuff },
     data: () => ({
-        isLoading: true,
         stuffModal: null,
         editStuffModal: null,
         fullModal: null,
@@ -1494,15 +1584,11 @@ export default {
             message: '',
         },
         filterOptionsCanvas: null,
-        storeFilterCanvas: null,
+        getStoresCanvas: null,
         factureFooterCanvas: null,
         stateModeToast: null,
         notice: null,
-        person: {},
-        persons: [],
-        store: {},
         storeInStuffList: {},
-        stores: [],
         marketers: [],
         players: [],
         personnelsID: {
@@ -1511,11 +1597,15 @@ export default {
             receiptAgentID: 0,
         },
         receiptAgents: [],
+        recipientsError: {
+            status: false,
+            message: '',
+        },
         allCashes: [],
         cashes: [],
-        cashID: 0,
         accountsPose: [],
         accounts: [],
+        cashID: 0,
         accountID: 0,
         accountID2: 0,
         accountID3: 0,
@@ -1540,16 +1630,17 @@ export default {
             sPersonPostCode: '',
             sPersonTel2: '',
         },
+        personSearchKey: '',
         factureDesc: '',
         factureSumPaid: 0,
         factureNesieh: 0,
-        personSearchKey: '',
+
         storeSearchKey: '',
-        storeStuffFilter: '',
+        stuffSearchKey: '',
         stuffsStock: false,
+
         stuff: {},
         editStuff: {},
-        stuffs: [],
         stuffList: true,
         stuffSingleClass: {},
         stuffFirstClassGroup: [],
@@ -1569,6 +1660,7 @@ export default {
             sPersonNationalCode: '',
             sPersonPostCode: '',
             sPersonTel2: '',
+
             dSum: 0,
             dSumAll: 0,
             dSumPaid: 0,
@@ -1582,10 +1674,12 @@ export default {
             dImpositionPercent: 0,
             dTransportRent: 0,
             dTransportAmount: 0,
+
             iPersonnelID: 0,
             iPersonnelID2: 0,
             iPersonnelID3: 0,
-            iCashID: 1,
+
+            iCashID: 0,
             iAccountID: 0,
             iAccountID2: 0,
             iAccountID3: 0,
@@ -1596,6 +1690,7 @@ export default {
             sPayNumber1: '',
             sPayNumber2: '',
             sPayNumber3: '',
+
             dGPSx: 0,
             dGPSy: 0,
             sDesc: '',
@@ -1622,20 +1717,46 @@ export default {
         },
     }),
     watch: {
-        factureSumPaid(value, oldValue) {
-            if (this.sumCashAndAccountsAmount <= 0) {
-                let i = 0
-                i = this.factureNesieh - value
-                this.factureNesieh = i
-                i = 0
-                i = this.factureNesieh + oldValue
-                this.factureNesieh = i
-            }
-            // console.log('now : ' + value + ' last : ' + oldValue)
-        },
+        // storeID() {
+        //     this.fetchStuffs()
+        // },
+        // factureSumPaid(value, oldValue) {
+        //     if (this.sumCashAndAccountsAmount < 0) {
+        //         let i = 0
+        //         i = this.factureNesieh - value
+        //         this.factureNesieh = i
+        //         i = 0
+        //         i = this.factureNesieh + oldValue
+        //         this.factureNesieh = i
+        //     }
+        //     // console.log('now : ' + value + ' last : ' + oldValue)
+        // },
     },
     computed: {
+        // states from vuex store
+        ...mapState(['isLoading']),
         ...mapState('user', ['userSettings']),
+        ...mapState('facture', [
+            'persons',
+            'person',
+            'stores',
+            'store',
+            'stuffs',
+        ]),
+        ...mapGetters('facture', ['storeID', 'factureNumber']),
+        cashName() {
+            return this.getName(this.cashes, this.cashID)
+        },
+        poseName() {
+            return this.getName(this.accountsPose, this.accountID)
+        },
+        accountName() {
+            return this.getName(this.accounts, this.accountID2)
+        },
+        havaleName() {
+            return this.getName(this.accounts, this.accountID3)
+        },
+        // tc
         getFactureTotalCount() {
             let totalCount = 0
             this.factureData.stuffs.forEach(stuff => {
@@ -1643,6 +1764,7 @@ export default {
             })
             return totalCount
         },
+        // return sum cash/pose/account
         sumCashAndAccountsAmount() {
             this.factureData.dSpot = 0
             let cashAmount = Number(this.cashesAndAccounts.cashAmount)
@@ -1700,6 +1822,14 @@ export default {
         },
     },
     methods: {
+        ...mapActions('facture', [
+            'fetchFactureNumMax',
+            'fetchPersons',
+            'setPerson',
+            'fetchStores',
+            'setStore',
+            'fetchStuffs',
+        ]),
         initConfig() {
             this.config.show = true
             this.config.addItemEvent = false
@@ -1707,164 +1837,99 @@ export default {
             this.config.addStuffEvent = false
             this.config.isSearch = true
         },
-        personFilter() {
-            EventService.getPersons(this.personSearchKey)
-                .then(res => {
-                    this.persons = res.data
-                    this.persons.map(person => {
-                        person.uniqID = this.randomString()
-                    })
-                    if (localStorage.person) {
-                        this.person = {
-                            iID: Number(JSON.parse(localStorage.person).iID),
-                            fullName: JSON.parse(localStorage.person).fullName,
-                            bCustomPerson: Number(
-                                JSON.parse(localStorage.person).bCustomPerson
-                            ),
-                            iPersonnelID: Number(
-                                JSON.parse(localStorage.person).iPersonnelID
-                            ),
-                            iPersonnelID2: Number(
-                                JSON.parse(localStorage.person).iPersonnelID2
-                            ),
-                            iPersonnelID3: Number(
-                                JSON.parse(localStorage.person).iPersonnelID3
-                            ),
-                        }
-                        this.factureData.iPersonID = Number(
-                            JSON.parse(localStorage.person).iID
-                        )
-                    }
-                    this.isLoading = false
-                    if (this.persons.length == 0) {
-                        this.errorState = true
-                    } else {
-                        this.errorState = false
-                    }
-                })
-                .catch(err => {
-                    return (this.errorState = true && console.log(err))
-                })
+        // get all persons
+        getPersons() {
+            this.fetchPersons(this.personSearchKey)
         },
-        setPerson(index) {
-            let sFamily = this.persons[index].sFamily
-                ? this.persons[index].sFamily
-                : ''
-            this.person = {
-                iID: this.persons[index].iID,
-                fullName: this.persons[index].sName + ' ' + sFamily.trim(),
-                bCustomPerson: this.persons[index].bCustomPerson,
-                iPersonnelID: this.persons[index].iPersonnelID,
-                iPersonnelID2: this.persons[index].iPersonnelID2,
-                iPersonnelID3: this.persons[index].iPersonnelID3,
-            }
-            localStorage.setItem('person', JSON.stringify(this.person))
-            this.factureData.iPersonID = this.person.iID
-            this.config.isSearch = false
-            this.config.addItemEvent = false
-            this.config.show = true
+        // select person in facture
+        selectPerson(person) {
+            this.setPerson(person)
+            this.initConfig()
         },
-        storeFilter() {
-            EventService.getStores(this.storeSearchKey)
-                .then(res => {
-                    this.stores = res.data
-                    if (localStorage.store) {
-                        this.store = {
-                            iID: Number(JSON.parse(localStorage.store).iID),
-                            sName: JSON.parse(localStorage.store).sName,
-                        }
-                        this.factureData.iStoreID = this.store.iID
-                    } else {
-                        this.store = {
-                            iID: this.stores[0].iID,
-                            sName: this.stores[0].sName,
-                        }
-                        this.factureData.iStoreID = this.store.iID
-                    }
-                    this.getStuffs()
-                    this.isLoading = false
-                })
-                .catch(() => (this.errorState = true))
+        // get all stores
+        getStores() {
+            this.fetchStores(this.storeSearchKey)
         },
-        setStore(index) {
-            this.store = {
-                iID: this.stores[index].iID,
-                sName: this.stores[index].sName,
-            }
-            localStorage.setItem('store', JSON.stringify(this.store))
-            this.factureData.iStoreID = JSON.parse(localStorage.store).iID
-            // dar halati ke store radifi off mibashad / baste be tanzimat anbar sharti mishavad
-            this.factureData.stuffs.forEach(stuff => {
-                stuff.iStoreID = this.store.iID
-            })
-            this.config.isSearch = false
-            this.config.addStoreEvent = false
-            this.config.show = true
-            this.storeFilter()
+        // select store in facture
+        selectStore(store) {
+            this.setStore(store)
+            this.initConfig()
         },
-        
-        setStoreinStuffList(index) {
+        // get stuffs
+        getStuffsStore() {
+            this.fetchStuffs(this.stuffSearchKey, Number(this.stuffsStock))
+        },
+
+        selectStoreinStuffList(store) {
             this.storeInStuffList = {
-                iID: this.stores[index].iID,
-                sName: this.stores[index].sName,
+                iID: store.iID,
+                sName: store.sName,
             }
-            this.getStuffsInStuffList()
-            this.storeFilterCanvas.hide()
+            this.getStuffsStoreInStuffList()
+            this.getStoresCanvas.hide()
         },
-        getStuffsInStuffList() {
-            EventService.getStuffsStore(this.storeInStuffList.iID)
-                .then(res => {
-                    this.stuffs = res.data
+        getStuffsStoreInStuffList() {
+            // this.isLoading = true
+            EventService.getStuffsStoreStore(this.storeInStuffList.iID)
+                .then(({ data }) => {
+                    this.stuffs = data
+                    // this.isLoading = false
                 })
                 .catch(err => err)
         },
-        
+        viewStuffFirstClass() {
+            this.config.stuffSecondClassEvent = false
+            this.config.stuffThirdClassEvent = false
+            this.config.stuffFirstClassEvent = true
+        },
+        viewStuffSecondClass() {
+            this.config.stuffFirstClassEvent = false
+            this.config.stuffThirdClassEvent = false
+            this.config.stuffSecondClassEvent = true
+        },
+        viewStuffThirdClass() {
+            this.config.stuffSecondClassEvent = false
+            this.config.stuffFirstClassEvent = false
+            this.config.stuffThirdClassEvent = true
+        },
         stuffFirstClass() {
-            await EventService.getStuffFirstClass()
+            EventService.getStuffFirstClass()
                 .then(({ data }) => {
                     this.stuffFirstClassGroup = data
-                    this.config.stuffFirstClassEvent = true
-                    this.config.stuffSecondClassEvent = false
-                    // this.getStuffs()
+                    this.viewStuffFirstClass()
+                    if (
+                        this.stuffSingleClass.iID !== 0 &&
+                        this.stuffSecondSingleClass.iID !== 0
+                    ) {
+                        this.stuffSingleClass.iID = null
+                        this.stuffSecondSingleClass.iID = null
+                        this.getStuffsStore()
+                    }
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
         stuffSecondClass(id, name) {
-            await EventService.getStuffSecondClass(id)
+            EventService.getStuffSecondClass(id)
                 .then(({ data }) => {
                     this.stuffSingleClass = { iID: id, sName: name }
                     this.stuffSecondClassGroup = data
-                    this.config.stuffFirstClassEvent = false
-                    this.config.stuffSecondClassEvent = true
-                    this.getStuffs()
+                    this.viewStuffSecondClass()
+                    this.getStuffsStore(this.stuffSingleClass.iID)
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
         stuffThirdClass(id, name) {
-            await EventService.getStuffThirdClass(this.stuffSingleClass.iID, id)
+            EventService.getStuffThirdClass(this.stuffSingleClass.iID, id)
                 .then(({ data }) => {
                     this.stuffSecondSingleClass = { iID: id, sName: name }
                     this.stuffThirdClassGroup = data
-                    this.config.stuffSecondClassEvent = false
-                    this.getStuffs()
+                    this.viewStuffThirdClass()
+                    this.getStuffsStore()
                 })
                 .catch(err => (err.status === 0 ? err.message : err))
         },
-        getStuffs() {
-            EventService.getStuffsStore(
-                this.store.iID,
-                Number(this.stuffsStock),
-                this.storeStuffFilter,
-                this.stuffSingleClass.iID,
-                this.stuffSecondSingleClass.iID
-            )
-                .then(({ data }) => {
-                    this.stuffs = data
-                    this.filterOptionsCanvas.hide()
-                })
-                .catch(() => (this.errorState = true))
-        },
-        targetStuff(index, stuffList) {
+
+        targetStuff(stuff, stuffList) {
             function setDefaultSellBox(stuff) {
                 switch (stuff.iDefaultSellBox) {
                     case 0:
@@ -1880,27 +1945,27 @@ export default {
             }
             if (stuffList) {
                 // trigger stuff in stufflist
-                this.stuff = this.stuffs[index]
+                this.stuff = stuff
                 this.stuff = {
-                    iStuffID: this.stuffs[index].iID,
-                    Name: this.stuffs[index].Name,
-                    Code: this.stuffs[index].Code,
-                    sBarCode: this.stuffs[index].sBarCode,
-                    dPrice: this.stuffs[index].dSellPrice,
-                    dBaseSellPrice: this.stuffs[index].dBaseSellPrice,
-                    dCount: this.stuffs[index].dCount,
-                    sUnit: this.stuffs[index].sUnit,
-                    sBoxName: this.stuffs[index].sBoxName,
-                    sBoxName2: this.stuffs[index].sBoxName2,
-                    bBox: this.stuffs[index].bBox,
-                    bBox2: this.stuffs[index].bBox2,
-                    dNumberInBox: this.stuffs[index].dNumberInBox,
-                    dNumberInBox2: this.stuffs[index].dNumberInBox2,
-                    bCanSellNoBox: this.stuffs[index].bCanSellNoBox,
-                    bCanSellBox: this.stuffs[index].bCanSellBox,
-                    bCanSellBox2: this.stuffs[index].bCanSellBox2,
-                    iDefaultSellBox: this.stuffs[index].iDefaultSellBox,
-                    sPicture: this.stuffs[index].sPicture,
+                    iStuffID: stuff.iID,
+                    Name: stuff.Name,
+                    Code: stuff.Code,
+                    sBarCode: stuff.sBarCode,
+                    dPrice: stuff.dSellPrice,
+                    dBaseSellPrice: stuff.dBaseSellPrice,
+                    dCount: stuff.dCount,
+                    sUnit: stuff.sUnit,
+                    sBoxName: stuff.sBoxName,
+                    sBoxName2: stuff.sBoxName2,
+                    bBox: stuff.bBox,
+                    bBox2: stuff.bBox2,
+                    dNumberInBox: stuff.dNumberInBox,
+                    dNumberInBox2: stuff.dNumberInBox2,
+                    bCanSellNoBox: stuff.bCanSellNoBox,
+                    bCanSellBox: stuff.bCanSellBox,
+                    bCanSellBox2: stuff.bCanSellBox2,
+                    iDefaultSellBox: stuff.iDefaultSellBox,
+                    sPicture: stuff.sPicture,
                 }
                 setDefaultSellBox(this.stuff)
                 this.stuff.Count = 1
@@ -1915,7 +1980,7 @@ export default {
             } else {
                 // trigger stuff in facture
                 this.stuffList = false
-                this.stuff = this.factureData.stuffs[index]
+                this.stuff = stuff
                 // edit stuff modal in facture
                 this.editStuff = {
                     iStuffID: this.stuff.iStuffID,
@@ -1994,12 +2059,15 @@ export default {
             this.stuffDetailsEvent = false
             this.recipientsEvent = false
             this.personnelsEvent = true
+
             const notEmpthy = !!(
                 this.factureData.iPersonnelID !== 0 ||
                 this.factureData.iPersonnelID2 !== 0 ||
                 this.factureData.iPersonnelID3 !== 0
             )
+
             this.$MANTEGH.personnelsDefault = true
+
             if (this.$MANTEGH.personnelsDefault) {
                 if (notEmpthy && this.setPersonnelsEvent) {
                     // set personnels static
@@ -2012,15 +2080,19 @@ export default {
                         // set personnels with mantegh defaults
                         this.personnelsID.marketerID = this.person.iPersonnelID
                         this.factureData.iPersonnelID = this.person.iPersonnelID
+
                         this.personnelsID.playerID = this.person.iPersonnelID2
                         this.factureData.iPersonnelID2 = this.person.iPersonnelID2
+
                         this.personnelsID.receiptAgentID = this.person.iPersonnelID3
                         this.factureData.iPersonnelID3 = this.person.iPersonnelID3
                     } else {
                         this.personnelsID.marketerID = 0
                         this.factureData.iPersonnelID = 0
+
                         this.personnelsID.playerID = 0
                         this.factureData.iPersonnelID2 = 0
+
                         this.personnelsID.receiptAgentID = 0
                         this.factureData.iPersonnelID3 = 0
                     }
@@ -2050,18 +2122,29 @@ export default {
             this.stuffDetailsEvent = false
             this.personnelsEvent = false
             this.recipientsEvent = true
+
             const notEmpthy = !!(
                 this.factureData.iCashID !== 0 ||
                 this.factureData.iAccountID !== 0 ||
                 this.factureData.iAccountID2 !== 0 ||
                 this.factureData.iAccountID3 !== 0
             )
+
             if (notEmpthy) {
                 this.cashID = this.factureData.iCashID
                 this.accountID = this.factureData.iAccountID
                 this.accountID2 = this.factureData.iAccountID2
                 this.accountID3 = this.factureData.iAccountID3
             }
+        },
+        getName(array, id) {
+            let name = ''
+            array.some(item => {
+                if (item.iID === id) {
+                    name = item.sName
+                }
+            })
+            return name
         },
         // calculate and return similar stuff total counts
         totalSimilarStuffCounts(stuffID) {
@@ -2081,7 +2164,7 @@ export default {
         isThere(stuffs, target) {
             let whichStuff = 0
             let stuffStatus = false
-            stuffs.filter((item, key) => {
+            stuffs.some((item, key) => {
                 if (
                     item.iStuffID === target.iStuffID &&
                     item.dNumberSelect === target.dNumberSelect
@@ -2090,6 +2173,7 @@ export default {
                     stuffStatus = true
                 }
             })
+
             return { spot: whichStuff, status: stuffStatus }
         },
         /**
@@ -2105,13 +2189,16 @@ export default {
              */
             let factureStuffs = this.factureData.stuffs
             let stuff = this.stuff
+
             let ratio = this.unitRatio(stuff)
             let finalStuffCount = this.finalCount(stuff, ratio)
             let stuffAmount = this.stuffAmount(stuff, finalStuffCount)
+
             let stuffCompetence =
                 stuff.dCount &&
                 finalStuffCount > 0 &&
                 stuff.dCount >= finalStuffCount
+
             /**
              * @type { condition }
              * when facture is empthy(first push stuff)
@@ -2133,12 +2220,14 @@ export default {
                 }
             } else {
                 let existing = this.isThere(factureStuffs, stuff)
+
                 let totalSimilarStuffCounts = this.totalSimilarStuffCounts(
                     stuff.iStuffID
                 )
                 // console.log(
                 //     totalSimilarStuffCounts + ' and is : ' + finalStuffCount
                 // )
+
                 /**
                  * @type { condition }
                  * when in facture existing similar stuff / facture not empthy
@@ -2171,9 +2260,11 @@ export default {
                         let totalSimilarStuffFactureCounts = this.totalSimilarStuffCounts(
                             factureStuffs[existing.spot].iStuffID
                         )
+
                         let ratioFacture = this.unitRatio(
                             factureStuffs[existing.spot]
                         )
+
                         if (
                             totalSimilarStuffFactureCounts + ratioFacture <=
                             factureStuffs[existing.spot].dCount
@@ -2183,11 +2274,14 @@ export default {
                              * facture / add stuff in facture
                              * increment stuff & calculate dAmount
                              */
+
                             factureStuffs[existing.spot].Count += ratioFacture
+
                             let stuffAmountFacture = this.stuffAmount(
                                 factureStuffs[existing.spot],
                                 factureStuffs[existing.spot].Count
                             )
+
                             factureStuffs[
                                 existing.spot
                             ].dAmount = stuffAmountFacture
@@ -2222,23 +2316,31 @@ export default {
                     }
                 }
             }
+
             // save facture to localStorage
             this.setfStuffs
             console.log(this.factureData)
         },
+
         removeStuffFromFacture() {
             let factureStuffs = this.factureData.stuffs
             let stuff = this.stuff
+
             let existing = this.isThere(factureStuffs, stuff)
+
             let ratioFacture = this.unitRatio(factureStuffs[existing.spot])
+
             if (existing.status) {
                 if (factureStuffs[existing.spot].Count > 0) {
                     factureStuffs[existing.spot].Count -= ratioFacture
+
                     let stuffAmountFacture = this.stuffAmount(
                         factureStuffs[existing.spot],
                         factureStuffs[existing.spot].Count
                     )
+
                     factureStuffs[existing.spot].dAmount = stuffAmountFacture
+
                     if (factureStuffs[existing.spot].Count < 1) {
                         factureStuffs[existing.spot].dAmount = 0
                         factureStuffs.splice(existing.spot, 1)
@@ -2247,24 +2349,28 @@ export default {
             } else {
                 factureStuffs.splice(factureStuffs[existing.spot])
             }
+
             // save facture to localStorage
             this.setfStuffs
         },
+
         editStuffinFacture() {
             let factureStuffs = this.factureData.stuffs
             let stuff = this.stuff
             let editStuff = this.editStuff
+
             let ratio = this.unitRatio(editStuff)
             let finalStuffCount = this.finalCount(editStuff, ratio)
             let stuffAmount = this.stuffAmount(editStuff, finalStuffCount)
+
             let existing = this.isThere(factureStuffs, stuff)
-            let existingEditedStuff = this.isThere(
-                factureStuffs,
-                editStuff
-            )
+
+            let existingEditedStuff = this.isThere(factureStuffs, editStuff)
+
             let totalSimilarStuffFactureCounts = this.totalSimilarStuffCounts(
                 factureStuffs[existing.spot].iStuffID
             )
+
             if (
                 totalSimilarStuffFactureCounts +
                     (finalStuffCount - factureStuffs[existing.spot].Count) <=
@@ -2276,30 +2382,39 @@ export default {
                 ) {
                     let editIBox = this.iBoxSetter(editStuff)
                     factureStuffs[existingEditedStuff.spot].iBox = editIBox
+
                     factureStuffs[existingEditedStuff.spot].Count += Number(
                         finalStuffCount
                     )
+
                     factureStuffs[existingEditedStuff.spot].dPrice = Number(
                         editStuff.dPrice
                     )
+
                     factureStuffs[existingEditedStuff.spot].dDiscount = Number(
                         editStuff.dDiscount
                     )
+
                     factureStuffs[existingEditedStuff.spot].dTax = Number(
                         editStuff.dTax
                     )
+
                     factureStuffs[
                         existingEditedStuff.spot
                     ].dImposition = Number(editStuff.dImposition)
+
                     factureStuffs[existingEditedStuff.spot].sDesc =
                         editStuff.sDesc
+
                     factureStuffs[
                         existingEditedStuff.spot
                     ].dAmount = this.stuffAmount(
                         editStuff,
                         factureStuffs[existingEditedStuff.spot].Count
                     )
+
                     factureStuffs.splice(existing.spot, 1)
+
                     this.editStuffModal.hide()
                 } else {
                     factureStuffs[existing.spot].dNumberSelect = Number(
@@ -2320,6 +2435,7 @@ export default {
                     )
                     factureStuffs[existing.spot].sDesc = editStuff.sDesc
                     factureStuffs[existing.spot].dAmount = stuffAmount
+
                     this.editStuffModal.hide()
                 }
             } else {
@@ -2328,10 +2444,13 @@ export default {
                     'تعداد کالای انتخاب شده بیش از موجودی است'
                 this.stateModeToast.show()
             }
+
             // save facture to localStorage
             this.setfStuffs
+
             console.log(this.factureData.stuffs)
         },
+
         /**
          * @type { event/method }
          * clear stuffs from facture & local
@@ -2361,6 +2480,7 @@ export default {
                 this.$forceUpdate()
             }
         },
+
         finalizeFacture() {
             this.factureData.dSumAll = Number(this.getSumAll)
             this.factureNesieh = Math.round(Number(this.getSumAll))
@@ -2380,7 +2500,19 @@ export default {
         },
         // end registeration facture
         registerFacture() {
-            if (!!Object.keys(this.person).length) {
+            if (!Object.keys(this.person).length) {
+                this.recipientsError.status = true
+                this.recipientsError.message = 'لطفا طرف حساب را انتخاب کنید'
+                setTimeout(() => (this.recipientsError.status = false), 2000)
+            } else if (
+                !this.factureNesieh > this.factureSumPaid &&
+                !this.factureNesieh < 0
+            ) {
+                this.recipientsError.status = true
+                this.recipientsError.message =
+                    'جمع اقلام با جمع نسیه + نقد برابر نیست!'
+                setTimeout(() => (this.recipientsError.status = false), 2000)
+            } else {
                 this.factureData.dSumPaid = this.factureSumPaid
                 this.factureData.dNesieh = this.factureNesieh
                 // MANTEGH config check
@@ -2399,6 +2531,13 @@ export default {
                         this.factureData.sPersonPostCode = this.factureOtherPerson.sPersonPostCode
                         this.factureData.sPersonTel2 = this.factureOtherPerson.sPersonTel2
                     } else {
+                        this.recipientsError.status = true
+                        this.recipientsError.message =
+                            'فیلد نام و موبایل طرف حساب متفرقه اجباری است'
+                        setTimeout(
+                            () => (this.recipientsError.status = false),
+                            2000
+                        )
                         return false
                     }
                 } else {
@@ -2410,41 +2549,34 @@ export default {
                     this.factureData.sPersonTel2 = this.factureOtherPerson.sPersonTel2
                 }
                 console.log(this.factureData)
-                await EventService.factureStore(this.factureData)
-                    .then(({ data }) => console.log(data))
+                EventService.factureStore(this.factureData)
+                    .then(({ data }) => {
+                        this.recipientsError.status = true
+                        this.recipientsError.message = `فاکتور با شماره ${data.iNum} با موفقیت ثبت شد`
+                        setTimeout(
+                            () => (this.recipientsError.status = false),
+                            2000
+                        )
+                        this.fullModal.hide()
+                        this.clearFacture()
+                        // location.reload()
+                    })
                     .catch(err => err.response)
-            } else {
-                console.log('taraf hesab mojood nist!')
             }
-            // const stuffs = this.factureData.stuffs
-            // this.checkInventory(stuffs)
-            // stuffs.map(stuff => {
-            //     delete stuff.Name
-            //     delete stuff.Code
-            //     delete stuff.sUnit
-            //     delete stuff.bBox
-            //     delete stuff.bBox2
-            //     delete stuff.sBoxName
-            //     delete stuff.sBoxName2
-            //     delete stuff.dNumberInBox
-            //     delete stuff.dNumberInBox2
-            //     delete stuff.bCanSellBox
-            //     delete stuff.bCanSellBox2
-            //     delete stuff.sPicture
-            //     return stuff
-            // })
         },
+
         // fetch personnels data and show in selectors
-        getPersonnels() {
+        async getPersonnels() {
             const marketers = await EventService.getPersonnels(1).then(
-                res => res.data
+                ({ data }) => data
             )
             const players = await EventService.getPersonnels(2).then(
-                res => res.data
+                ({ data }) => data
             )
             const receiptAgents = await EventService.getPersonnels(3).then(
-                res => res.data
+                ({ data }) => data
             )
+
             Promise.all([marketers, players, receiptAgents])
                 .then(data => {
                     this.marketers = data[0]
@@ -2453,6 +2585,7 @@ export default {
                 })
                 .catch(err => err)
         },
+
         // save personnel changes in facture
         setPersonnels() {
             this.factureData.iPersonnelID = this.personnelsID.marketerID
@@ -2468,27 +2601,28 @@ export default {
         },
         getCashes() {
             // fetch all cashes/pose accounts/accounts
-            await EventService.getCashAndAccounts()
+            EventService.getCashAndAccounts()
                 .then(({ data }) => {
                     this.allCashes = data
                 })
                 .catch(err => new Error(err))
+
             // fetch just cashes
-            await EventService.getCashes()
+            EventService.getCashes()
                 .then(({ data }) => {
                     this.cashes = data
                     if (this.$MANTEGH.defaultCash) {
                         this.cashID = this.$MANTEGH.defaultCashID
                     } else {
                         this.cashID = 0
-                        this.factureData.iCashID = this.cashes[0].iID
+                        this.factureData.iCashID = this.cashID
                     }
                 })
                 .catch(err => new Error(err))
         },
         getAccounts() {
             // fetch pose accounts
-            await EventService.getAccounts(1).then(({ data }) => {
+            EventService.getAccounts(1).then(({ data }) => {
                 this.accountsPose = data
                 if (this.$MANTEGH.defaultPose) {
                     this.accountID = this.$MANTEGH.defaultPoseID
@@ -2497,7 +2631,7 @@ export default {
                 }
             })
             // fetch accounts
-            await EventService.getAccounts().then(({ data }) => {
+            EventService.getAccounts().then(({ data }) => {
                 this.accounts = data
                 if (this.$MANTEGH.defaultPose) {
                     this.accountID2 = this.$MANTEGH.defaultAccountID2
@@ -2509,54 +2643,133 @@ export default {
             })
         },
         setRecipients() {
-            if (this.cashID !== 0 && this.sumCashAndAccountsAmount > 0) {
+            let recipients = [
+                {
+                    name: 'صندوق',
+                    id: this.cashID,
+                    amount: this.cashesAndAccounts.cashAmount,
+                },
+                {
+                    name: 'کارت خوان',
+                    id: this.accountID,
+                    amount: this.cashesAndAccounts.accountAmount1,
+                },
+                {
+                    name: 'حساب',
+                    id: this.accountID2,
+                    amount: this.cashesAndAccounts.accountAmount2,
+                },
+                {
+                    name: 'حواله',
+                    id: this.accountID3,
+                    amount: this.cashesAndAccounts.accountAmount3,
+                },
+            ]
+
+            let recipientsStatus = false
+
+            recipients.some(recipient => {
+                if (recipient.id === 0 && recipient.amount !== 0) {
+                    this.recipientsError.status = true
+                    this.recipientsError.message = `لطفا ${recipient.name} را انتخاب کنید`
+                    setTimeout(
+                        () => (this.recipientsError.status = false),
+                        2000
+                    )
+                } else if (
+                    recipient.id !== 0 &&
+                    (recipient.amount === 0 || recipient.amount.length === 0)
+                ) {
+                    this.recipientsError.status = true
+                    this.recipientsError.message = `لطفا مبلغ ${recipient.name} را وارد کنید`
+                    setTimeout(
+                        () => (this.recipientsError.status = false),
+                        2000
+                    )
+                }
+            })
+
+            if (this.remainingFacture < 0) {
+                this.recipientsError.status = true
+                this.recipientsError.message = 'مبلغ پرداختی نمیتواند منفی باشد'
+                setTimeout(() => (this.recipientsError.status = false), 2000)
+            }
+
+            if (!this.recipientsError.status) recipientsStatus = true
+
+            if (this.sumCashAndAccountsAmount > 0 && recipientsStatus) {
                 this.factureData.iCashID = this.cashID
                 this.factureData.iAccountID = this.accountID
                 this.factureData.iAccountID2 = this.accountID2
                 this.factureData.iAccountID3 = this.accountID3
-                this.factureData.dCashAmount = Number(
-                    this.cashesAndAccounts.cashAmount
-                )
-                this.factureData.dAccountAmount1 = Number(
-                    this.cashesAndAccounts.accountAmount1
-                )
-                this.factureData.dAccountAmount2 = Number(
-                    this.cashesAndAccounts.accountAmount2
-                )
-                this.factureData.dAccountAmount3 = Number(
-                    this.cashesAndAccounts.accountAmount3
-                )
+                this.factureData.dCashAmount = this.cashesAndAccounts.cashAmount
+                this.factureData.dAccountAmount1 = this.cashesAndAccounts.accountAmount1
+                this.factureData.dAccountAmount2 = this.cashesAndAccounts.accountAmount2
+                this.factureData.dAccountAmount3 = this.cashesAndAccounts.accountAmount3
                 this.factureNesieh = this.remainingFacture
                 this.factureSumPaid = this.sumCashAndAccountsAmount
                 this.paidEvent = false
                 this.viewCashAndAccounts()
-            } else {
-                // console.log('didiiiiiiiiiiin!')
+            } else if (
+                this.sumCashAndAccountsAmount === 0 &&
+                !this.recipientsError.status
+            ) {
+                this.factureData.iCashID = this.cashID
+                this.factureData.iAccountID = this.accountID
+                this.factureData.iAccountID2 = this.accountID2
+                this.factureData.iAccountID3 = this.accountID3
+
+                if (!String(this.cashesAndAccounts.cashAmount).length)
+                    this.factureData.dCashAmount = 0
+                else
+                    this.factureData.dCashAmount = this.cashesAndAccounts.cashAmount
+                if (!String(this.cashesAndAccounts.accountAmount1).length)
+                    this.factureData.dAccountAmount1 = 0
+                else
+                    this.factureData.dAccountAmount1 = this.cashesAndAccounts.accountAmount1
+                if (!String(this.cashesAndAccounts.accountAmount2).length)
+                    this.factureData.dAccountAmount2 = 0
+                else
+                    this.factureData.dAccountAmount2 = this.cashesAndAccounts.accountAmount2
+                if (!String(this.cashesAndAccounts.accountAmount3).length)
+                    this.factureData.dAccountAmount3 = 0
+                else
+                    this.factureData.dAccountAmount3 = this.cashesAndAccounts.accountAmount3
+                this.factureNesieh = this.factureData.dSumAll
+                this.factureSumPaid = this.sumCashAndAccountsAmount
+                this.paidEvent = true
+                this.viewCashAndAccounts()
             }
         },
+
         // random string generator
         randomString() {
             var characters =
                 'ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'
             var lenString = 8
             var randomstring = ''
+
             for (var i = 0; i < lenString; i++) {
                 var rnum = Math.floor(Math.random() * characters.length)
                 randomstring += characters.substring(rnum, rnum + 1)
             }
+
             return randomstring
         },
     },
-        created() {
+
+    created() {
         if (localStorage.fStuffs)
             this.factureData.stuffs = JSON.parse(localStorage.fStuffs)
-        this.storeFilter()
+        this.fetchFactureNumMax()
+        this.getStores()
         this.stuffFirstClass()
-        this.personFilter()
+        this.getPersons()
         this.getPersonnels()
         this.getCashes()
         this.getAccounts()
     },
+
     mounted() {
         let modalConfig = { backdrop: 'static', keyboard: false }
         this.stuffModal = new Modal(this.$refs.stuffModal)
@@ -2565,10 +2778,11 @@ export default {
         this.descModal = new Modal(this.$refs.descModal)
         this.filterOptionsCanvas = new Offcanvas(this.$refs.filterOptionsCanvas)
         this.factureFooterCanvas = new Offcanvas(this.$refs.factureFooterCanvas)
-        this.storeFilterCanvas = new Offcanvas(this.$refs.storeFilterCanvas)
+        this.getStoresCanvas = new Offcanvas(this.$refs.getStoresCanvas)
         this.stateModeToast = new Toast(this.$refs.stateModeToast, {
             delay: 2000,
         })
+
         this.notice = new Toast(this.$refs.notice)
         // console.log(this.notice)
     },

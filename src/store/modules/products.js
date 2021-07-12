@@ -23,12 +23,12 @@ export const mutations = {
 
 export const actions = {
     async getProducts({ commit }) {
-        // API.getProducts().then(({ data }) => commit('SET_PRODUCTS', data))
+        commit('LOADING_', null, { root: true })
         try {
             let response = await API.getProducts()
             let products = response.data
             commit('SET_PRODUCTS', products)
-            console.log('ejra shod!')
+            commit('LOADING_', null, { root: true })
         } catch {
             console.log('Akh Akh Akhh!!!')
         }

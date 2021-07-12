@@ -10,4 +10,9 @@ export default createStore({
     state: {
         isLoading: false,
     },
+    mutations: {
+        LOADING_(state) {
+            state.isLoading = !state.isLoading
+        },
+    },
 })

@@ -1,11 +1,11 @@
 <template>
     <h5>PRODUCTS</h5>
-    <button @click.prevent="myt.show()" class="btn btn-success">
+    <!-- <button @click.prevent="myt.show()" class="btn btn-success">
         show toast
     </button>
     <toasti ref="myt" @hide="myt.hide()">
         <template #message>salam kon</template>
-    </toasti>
+    </toasti> -->
     <input type="number" v-model="hasan" />
     <button @click="getProducts" class="btn btn-primary mb-2">
         <span
@@ -17,15 +17,21 @@
         <span v-if="isLoading">wait...</span>
         <span v-if="!isLoading">fetch products list</span>
     </button>
-
-    <div v-for="product in products" :key="product.id" class="my-2">
-        <button
-            @click="sendProduct(product)"
-            class="btn btn-outline-dark btn-sm ml-2"
-        >
-            ADD
-        </button>
-        {{ `[ ${product.name} ]` }}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div v-for="product in products" :key="product.id" class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.quantity }}</p>
+                <button @click="sendProduct(product)" class="btn btn-success">
+                    ADD
+                </button>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">{{
+                    'Cost is : ' + product.cost
+                }}</small>
+            </div>
+        </div>
     </div>
     <hr />
     <ul>
@@ -38,11 +44,11 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { Toast } from 'bootstrap'
-import toasti from '@/components/Toast'
+// import toasti from '@/components/Toast'
 
 export default {
     name: 'test',
-    components: { toasti },
+    // components: { toasti },
     data: () => ({
         isLoading: false,
         myt: null,
@@ -61,13 +67,13 @@ export default {
         ...mapActions('products', ['getProducts', 'addProduct']),
         sendProduct(product) {
             this.addProduct(product)
-            console.log(product)
         },
     },
     mounted() {
-        this.myt = new Toast(this.$refs.myt)
+        console.log(this.storeID + 1)
+        // this.myt = new Toast(this.$refs.myt)
         // this.myt.show()
-        console.log(this.myt)
+        // console.log(this.myt)
     },
 }
 </script>

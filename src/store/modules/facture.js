@@ -1,161 +1,64 @@
+import EventService from '@/services/EventService'
+import { randomString } from '@/utils/randomString'
+
+export const namespaced = true
+
 export const state = {
-    // globals
-    personnelsEvent: false,
-    cashesAndAccountsEvent: false,
-    recipientsEvent: false,
-    stuffDetailsEvent: false,
-    setPersonnelsEvent: false,
-    paidEvent: true,
-    stuffList: true,
-    stuffsStock: false,
-    // components instance
-    instance: {
-        stuffModal: null,
-        editStuffModal: null,
-        fullModal: null,
-        descModal: null,
-        filterOptionsCanvas: null,
-        storeFilterCanvas: null,
-        factureFooterCanvas: null,
-        stateModeToast: null,
-        globalNotice: null,
-    },
-    // facture mediators
-    mediator: {
-        person: {},
-        persons: [],
-        store: {},
-        storeInStuffList: {},
-        stores: [],
-        stuff: {},
-        editStuff: {},
-        stuffs: [],
-        personSearchKey: '',
-        storeSearchKey: '',
-        storeStuffFilter: '',
-        stuffSingleClass: {},
-        stuffFirstClassGroup: [],
-        stuffSecondSingleClass: {},
-        stuffSecondClassGroup: [],
-        stuffThirdSingleClass: {},
-        stuffThirdClassGroup: [],
-
-        marketers: [],
-        players: [],
-        receiptAgents: [],
-        marketerID: 0,
-        playerID: 0,
-        receiptAgentID: 0,
-
-        allCashes: [],
-        cashes: [],
-        accountsPose: [],
-        accounts: [],
-        cashID: 0,
-        accountID: 0,
-        accountID2: 0,
-        accountID3: 0,
-        cashAmount: 0,
-        accountAmount1: 0,
-        accountAmount2: 0,
-        accountAmount3: 0,
-
-        dDiscount: 0,
-        dTaxPercent: 0,
-        dImpositionPercent: 0,
-        dTransportRent: 0,
-
-        sPersonRequired: false,
-        sPerson: '',
-        sPersonTel: '',
-        sPersonAddress: '',
-        sPersonNationalCode: '',
-        sPersonPostCode: '',
-        sPersonTel2: '',
-
-        factureSumPaid: 0,
-        factureNesieh: 0,
-        factureDesc: '',
-    },
-    // facture data
+    factureNumber: 0,
+    // person area
+    persons: [],
+    person: {},
+    // store area
+    stores: [],
+    store: {},
+    // stuff area
+    stuffs: [],
+    stuff: {},
+    stuffSearchKey: '',
+    stuffsStock: 0,
+    // stuff class group
+    stuffFirstClassGroup: [],
+    stuffSecondClassGroup: [],
+    stuffThirdClassGroup: [],
+    // facture states
     facture: {
         iType: 0,
-        date: new Date(),
-        iProjectID: 0,
-        iStoreID: 0,
-        iPersonID: 0,
-        sPersonName: '',
-        sPersonTel: '',
-        sPersonAddress: '',
-        sPersonNationalCode: '',
-        sPersonPostCode: '',
-        sPersonTel2: '',
-        dSum: 0,
-        dSumAll: 0,
-        dSumPaid: 0,
-        dSpot: 0,
-        dNesieh: 0,
-        dDiscount: 0,
-        dDiscountPercent: 0,
-        dTax: 0,
-        dTaxPercent: 0,
-        dImposition: 0,
-        dImpositionPercent: 0,
-        dTransportRent: 0,
-        dTransportAmount: 0,
-        iPersonnelID: 0,
-        iPersonnelID2: 0,
-        iPersonnelID3: 0,
-        iCashID: 0,
-        iAccountID: 0,
-        iAccountID2: 0,
-        iAccountID3: 0,
-        dCashAmount: 0,
-        dAccountAmount1: 0,
-        dAccountAmount2: 0,
-        dAccountAmount3: 0,
-        sPayNumber1: 0,
-        sPayNumber2: 0,
-        sPayNumber3: 0,
-        dGPSx: 0,
-        dGPSy: 0,
-        sDesc: '',
+        iPersonID: null,
+        iStoreID: null,
         stuffs: [],
     },
 }
 
 export const mutations = {
-    // set persons
-    SET_PERSONS(state, persons) {
-        let statePersons = state.mediator.persons
-        statePersons = persons
-        statePersons.map(person => (person.uniqID = this.randomString()))
-
-        let isPersonInStorage = localStorage.person
-        let statePerson = state.mediator.person
-        let facturePersonID = state.facture.iPersonID
-
-        if (isPersonInStorage) {
-            statePerson = {
-                iID: JSON.parse(localStorage.person).iID,
-                fullName: JSON.parse(localStorage.person).fullName,
-                bCustomPerson: JSON.parse(localStorage.person).bCustomPerson,
-                iPersonnelID: JSON.parse(localStorage.person).iPersonnelID,
-                iPersonnelID2: JSON.parse(localStorage.person).iPersonnelID2,
-                iPersonnelID3: JSON.parse(localStorage.person).iPersonnelID3,
-            }
-
-            facturePersonID = JSON.parse(localStorage.person).iID
-        }
-
-        state.isLoading = false
+    SET_FACTURE_NUM(state, factureNum) {
+        state.factureNumber = factureNum + 1
     },
-    // select person
-    SELECT_PERSON(state, person) {
-        let sFamily = person.sFamily ? person.sFamily : ''
-        let statePerson = state.mediator.person
+    // give and set all persons
+    SET_PERSONS(state, data) {
+        state.persons = data
+        // set persons uniqe id for accordion
+        state.persons.map(person => (person.uniqID = randomString()))
+        // if local person exist set them
+        if (localStorage.person) {
+            let localPerson = JSON.parse(localStorage.person)
 
-        statePerson = {
+            state.person = {
+                iID: localPerson.iID,
+                fullName: localPerson.fullName,
+                bCustomPerson: localPerson.bCustomPerson,
+                iPersonnelID: localPerson.iPersonnelID,
+                iPersonnelID2: localPerson.iPersonnelID2,
+                iPersonnelID3: localPerson.iPersonnelID3,
+            }
+            // set facture personID
+            state.facture.iPersonID = state.person.iID
+        }
+    },
+    // set selected person in state/facture
+    SET_PERSON(state, person) {
+        let sFamily = person.sFamily ? person.sFamily : ''
+        // set person to state
+        state.person = {
             iID: person.iID,
             fullName: person.sName + ' ' + sFamily.trim(),
             bCustomPerson: person.bCustomPerson,
@@ -163,65 +66,144 @@ export const mutations = {
             iPersonnelID2: person.iPersonnelID2,
             iPersonnelID3: person.iPersonnelID3,
         }
-
-        localStorage.setItem('person', JSON.stringify(statePerson))
-
-        let facturePersonID = state.facture.iPersonID
-        facturePersonID = state.mediator.person.iID
+        // set person localStorage for reload page
+        localStorage.setItem('person', JSON.stringify(state.person))
+        state.facture.iPersonID = state.person.iID
     },
-    // set stores
+    // give and set all stores
     SET_STORES(state, stores) {
-        let stateStores = state.mediator.stores
-        stateStores = stores
+        state.stores = stores
 
-        let isStoreInStorage = localStorage.store
-        let stateStore = state.mediator.store
-        let factureStoreID = state.facture.iStoreID
-
-        if (isStoreInStorage) {
-            stateStore = {
-                iID: JSON.parse(localStorage.store).iID,
-                sName: JSON.parse(localStorage.store).sName,
+        if (localStorage.store) {
+            let localStore = JSON.parse(localStorage.store)
+            state.store = {
+                iID: localStore.iID,
+                sName: localStore.sName,
             }
-
-            factureStoreID = stateStore.iID
         } else {
-            stateStore = {
-                iID: stateStores[0].iID,
-                sName: stateStores[0].sName,
+            state.store = {
+                iID: state.stores[0].iID,
+                sName: state.stores[0].sName,
             }
-
-            factureStoreID = stateStore.iID
         }
 
-        state.isLoading = false
+        state.facture.iStoreID = state.store.iID
     },
-    // select store
-    SELECT_STORE() {},
+    // set selected store in state/facture
+    SET_STORE(state, store) {
+        state.store = {
+            iID: store.iID,
+            sName: store.sName,
+        }
+
+        localStorage.setItem('store', JSON.stringify(state.store))
+
+        state.facture.iStoreID = state.store.iID
+
+        // dar halati ke store radifi off mibashad / baste be tanzimat anbar sharti mishavad
+        state.facture.stuffs.forEach(stuff => {
+            stuff.iStoreID = state.store.iID
+        })
+    },
+    // give and set all stuffs
+    SET_STUFFS(state, stuffs) {
+        state.stuffs = stuffs
+    },
+    SET_FILTERS(state, filters) {
+        state.stuffSearchKey = filters[0]
+        state.stuffsStock = filters[1]
+        console.log(state.stuffsStock)
+    },
+    SET_STUFF_FIRST_CLASS(state, stuffFirstClassGroup) {
+        state.stuffFirstClassGroup = stuffFirstClassGroup
+    },
+    SET_STUFF_SECOND_CLASS(state, stuffSecondClassGroup) {
+        state.stuffSecondClassGroup = stuffSecondClassGroup
+    },
+    SET_STUFF_THIRD_CLASS(state, stuffThirdClassGroup) {
+        state.stuffThirdClassGroup = stuffThirdClassGroup
+    },
 }
 
 export const actions = {
-    async getPersons({ commit, state }) {
-        await EventService.getPersons(state.mediator['personSearchKey'])
-            .then(({ persons }) => commit('SET_PERSONS', persons))
-            .catch(err => err)
+    async fetchFactureNumMax({ commit, state }) {
+        const factureNumMax = await EventService.getMaxFactorNum(
+            state.facture.iType
+        )
+        commit('SET_FACTURE_NUM', factureNumMax.data.iNum)
     },
-
-    selectPerson(person) {
+    // fetch persons and call set
+    async fetchPersons({ commit }, personSearchKey) {
+        commit('LOADING_', null, { root: true })
+        try {
+            const persons = await EventService.getPersons(personSearchKey)
+            commit('SET_PERSONS', persons.data)
+            commit('LOADING_', null, { root: true })
+        } catch {}
+    },
+    // select person and call set
+    setPerson({ commit }, person) {
         commit('SET_PERSON', person)
     },
-
-    async getStores({ commit, dispatch, state }) {
-        await EventService.getStores(state.mediator['storeSearchKey'])
-            .then(({ stores }) => {
-                commit('SET_STORES', stores)
-                dispatch('getStuffs')
-            })
-            .catch(err => err)
+    // fetch stores and call set
+    async fetchStores({ commit, dispatch }, storeSearchKey) {
+        commit('LOADING_', null, { root: true })
+        try {
+            const stores = await EventService.getStores(storeSearchKey)
+            commit('SET_STORES', stores.data)
+            commit('LOADING_', null, { root: true })
+            dispatch('fetchStuffs')
+        } catch {}
     },
-    selectStore(store) {
+    // select store and call set
+    setStore({ commit, dispatch }, store) {
         commit('SET_STORE', store)
+        dispatch('fetchStuffs')
+    },
+    // fetch stuffs and call set
+    async fetchStuffs({ commit, state }, stuffSearchKey, stuffsStock) {
+        commit('LOADING_', null, { root: true })
+
+        if (stuffSearchKey.length <= 0 || stuffSearchKey == undefined)
+            stuffSearchKey = ''
+        if (stuffsStock < 0 || stuffsStock == undefined) stuffsStock = 0
+        const filters = [stuffSearchKey, stuffsStock]
+        commit('SET_FILTERS', filters)
+        console.log(filters)
+
+        try {
+            const stuffs = await EventService.getStuffsStore(
+                state.store.iID,
+                stuffSearchKey,
+                stuffsStock
+            )
+            commit('SET_STUFFS', stuffs.data)
+            commit('LOADING_', null, { root: true })
+        } catch {}
+    },
+    // fetch stuff first class group
+    async fetchStuffFirstClass({ commit }) {
+        const stuffFirstClassGroup = await EventService.getStuffFirstClass()
+        commit('SET_STUFF_FIRST_CLASS', stuffFirstClassGroup.data)
+    },
+    // fetch stuff second class group
+    async fetchStuffSecondClass({ commit }, iFirstClassID) {
+        const stuffSecondClassGroup = await EventService.getStuffSecondClass(
+            iFirstClassID
+        )
+        commit('SET_STUFF_SECOND_CLASS', stuffSecondClassGroup.data)
+    },
+    // fetch stuff third class group
+    async fetchStuffThirdClass({ commit }, iFirstClassID, iSecondClassID) {
+        const stuffThirdClassGroup = await EventService.getStuffThirdClass(
+            iFirstClassID,
+            iSecondClassID
+        )
+        commit('SET_STUFF_THIRD_CLASS', stuffThirdClassGroup.data)
     },
 }
 
-export const getters = {}
+export const getters = {
+    storeID: state => state.store.iID,
+    factureNumber: state => state.factureNumber,
+}
