@@ -1,15 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 
-const checkPermission = (to, from, next) => {
-    store.dispatch('user/getSecurity', to.meta.area).then(() => {
-        let userPermission = store.state.user['userPermission']
-        let typePermission = `${userPermission}.${to.meta.type}`
-        if (typePermission) next()
-        else false
-    })
-}
-
 const isAllowed = (to, from, next) => {
     console.log(to.meta.area + ' & type is : ' + to.meta.type)
     next()
@@ -29,9 +20,16 @@ const routes = [
                 beforeEnter: [isAllowed],
             },
             {
-                path: 'store',
-                name: 'store',
+                path: 'facture/store',
+                name: 'facture-store',
                 component: () => import('../views/Store.vue'),
+                props: { type: Number(1), label: 'foroosh' },
+            },
+            {
+                path: 'facture/order',
+                name: 'facture-order',
+                component: () => import('../views/Store.vue'),
+                props: { type: Number(12), label: 'sefaresh' },
             },
             {
                 path: 'test',

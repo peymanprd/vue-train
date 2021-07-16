@@ -1,90 +1,81 @@
 <template>
-    <div v-for="user in allUsers" :key="user.id">
-        <button
-            @click="editUser(user), myModal.show()"
-            class="btn btn-sm btn-light my-2"
+    <h5>{{ label + ' type is : ' + type }}</h5>
+
+    <button @click="resetState" class="btn btn-danger">reset state</button>
+
+    <template v-if="!isLoading">
+        <div
+            class="d-flex p-2 shadow-sm my-2"
+            v-for="product in mediator[type].products"
+            :key="product.id"
         >
-            {{ user.name }}
-        </button>
-    </div>
-
-    <!-- Button trigger modal -->
-    <button @click="myModal.show()" type="button" class="btn btn-primary">
-        Launch static backdrop modal
-    </button>
-
-    <!-- Modal -->
-    <div ref="myModal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        {{ takUser.name }}
-                    </h5>
-                    <button
-                        @click="myModal.hide()"
-                        type="button"
-                        class="btn-close"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <input
-                        v-model="takUser.name"
-                        type="text"
-                        class="form-control"
-                    />
-                </div>
-                <div class="modal-footer">
-                    <button
-                        @click="myModal.hide()"
-                        type="button"
-                        class="btn btn-secondary"
-                    >
-                        Close
-                    </button>
-                    <button type="button" class="btn btn-primary">
-                        Understood
-                    </button>
-                </div>
+            <div class="flex-shrink-0">
+                <img :src="product.img" width="80" />
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h6>{{ product.name }}</h6>
+                <button
+                    @click="addProduct(product)"
+                    class="btn btn-primary"
+                    type="button"
+                >
+                    Add kon
+                </button>
             </div>
         </div>
+    </template>
+
+    <template v-else>
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </template>
+
+    <hr />
+    <div v-for="fProduct in facture[type].products">
+        <img :src="fProduct.img" width="80" />
+        <p>
+            <small class="danger">{{ fProduct.count }}</small>
+        </p>
+        <h5>{{ fProduct.name }}</h5>
     </div>
 </template>
+
 <script>
-import { mapState } from 'vuex'
-import { Modal } from 'bootstrap'
+import { mapState, mapActions } from 'vuex'
+
 export default {
-    name: 'userTest',
-    data: () => ({
-        myModal: null,
-        userss: [],
-        singleUser: {},
-    }),
+    name: 'facture',
+    props: ['type', 'label'],
     computed: {
-        ...mapState(['allUsers', 'takUser']),
+        ...mapState(['isLoading']),
+        ...mapState('products', ['mediator', 'facture']),
     },
     methods: {
-        users() {
-            this.$store.dispatch('getUsers')
+        ...mapActions('products', [
+            'getProducts',
+            'addProduct',
+            'setFactureType',
+            'resetFacture',
+        ]),
+        resetState() {
+            this.resetFacture()
         },
-        editUser(user) {
-            this.$store.dispatch('editUser', user)
-            
-            // console.log(user)
-
-            // this.userss = this.users
-            // let userlar = this.userss[index]
-            // // this.singleUser = userlar
-            // this.singleUser = { name: userlar.name }
+        initSetup() {
+            this.setFactureType(this.type)
+            if (!this.mediator[this.type].products.length) this.getProducts()
         },
+        addProductToFacture(product) {
+            this.addProduct(product)
+        },
+    },
+    beforeUpdate() {
+        this.initSetup()
     },
     created() {
-        this.users()
-    },
-    mounted() {
-        this.myModal = new Modal(this.$refs.myModal)
-        // console.log(this.myModal)
+        this.initSetup()
     },
 }
 </script>

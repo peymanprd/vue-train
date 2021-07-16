@@ -16,7 +16,7 @@
                 logout
             </button>
             <router-link :to="{ name: 'About' }" class="btn btn-link"
-            >About</router-link
+                >About</router-link
             >
             <router-link :to="{ name: 'intest' }" class="btn btn-link"
                 >Intest Peo</router-link
@@ -24,6 +24,12 @@
             <router-link :to="{ name: 'test' }" class="btn btn-link"
                 >Test</router-link
             >
+            <router-link :to="{ name: 'facture-store' }" class="btn btn-link">
+                facture foroosh
+            </router-link>
+            <router-link :to="{ name: 'facture-order' }" class="btn btn-link">
+                facture sefaresh
+            </router-link>
         </div>
         <router-view />
     </div>

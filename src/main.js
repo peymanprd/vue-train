@@ -10,7 +10,7 @@ import './assets/sass/main.sass'
 
 const app = createApp(App)
 
-import { apiClient } from '@/services/api'
+import { userClient } from '@/services/api'
 
 app.use(store)
     .use(router)
@@ -26,10 +26,10 @@ app.mixin({
             })
         }
 
-        apiClient.interceptors.response.use(
+        userClient.interceptors.response.use(
             response => response,
             error => {
-                if (error.response.status === 401) {
+                if (error) {
                     store.dispatch('user/logout')
                 }
                 return Promise.reject(error)

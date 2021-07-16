@@ -207,3 +207,14 @@ export const getters = {
     storeID: state => state.store.iID,
     factureNumber: state => state.factureNumber,
 }
+
+// computed: {
+//   message: {
+//     get () {
+//       return this.$store.state.obj.message
+//     },
+//     set (value) {
+//       this.$store.commit('updateMessage', value)
+//     }
+//   }
+// }

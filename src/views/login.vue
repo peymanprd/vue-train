@@ -54,14 +54,14 @@ export default {
         ...mapState('user', ['userResult']),
     },
     methods: {
-        async login() {
+        login() {
             if (
                 this.userData.email === null &&
                 this.userData.password === null
             ) {
                 this.error = 'هیچکی توش نیست!'
             } else {
-                await this.$store.dispatch('user/login', this.userData)
+                this.$store.dispatch('user/login', this.userData)
             }
         },
     },
