@@ -31,6 +31,10 @@ for (let i = 0; i <= fTypesCount; i++) {
     state.facture.push(initState())
 }
 
+export const getters = {
+    products: state => state.mediator[state.fType].products,
+}
+
 export const mutations = {
     // reset facture
     RESET_FACTURE(state) {
@@ -86,5 +90,3 @@ export const actions = {
         commit('ADD_PRODUCT', product)
     },
 }
-
-export const getters = {}

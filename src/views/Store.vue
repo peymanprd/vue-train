@@ -6,7 +6,7 @@
     <template v-if="!isLoading">
         <div
             class="d-flex p-2 shadow-sm my-2"
-            v-for="product in mediator[type].products"
+            v-for="product in products"
             :key="product.id"
         >
             <div class="flex-shrink-0">
@@ -44,14 +44,15 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'facture',
     props: ['type', 'label'],
     computed: {
         ...mapState(['isLoading']),
-        ...mapState('products', ['mediator', 'facture']),
+        ...mapState('products', ['facture']),
+        ...mapGetters('products', ['products']),
     },
     methods: {
         ...mapActions('products', [
@@ -65,7 +66,7 @@ export default {
         },
         initSetup() {
             this.setFactureType(this.type)
-            if (!this.mediator[this.type].products.length) this.getProducts()
+            if (!this.products.length) this.getProducts()
         },
         addProductToFacture(product) {
             this.addProduct(product)
