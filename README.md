@@ -17,3 +17,9 @@ yarn build
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+barcode :
+https://npm.io/package/vue-barcode-reader
+https://www.npmjs.com/package/zxing-js-es6
+remember ".vue" end of import components
